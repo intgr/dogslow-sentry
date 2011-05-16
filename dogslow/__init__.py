@@ -11,7 +11,7 @@ import datetime as dt
 from django.conf import settings
 from django.core.exceptions import MiddlewareNotUsed
 from django.core.mail.message import EmailMessage
-from django_watchdog.timer import Timer
+from dogslow.timer import Timer
 
 class SafePrettyPrinter(pprint.PrettyPrinter, object):
     def format(self, obj, context, maxlevels, level):
@@ -78,10 +78,10 @@ def stack(f, with_locals=False):
 class WatchdogMiddleware(object):
 
     def __init__(self):
-        if not getattr(settings, 'DJANGO_WATCHDOG', False):
+        if not getattr(settings, 'DOGSLOW', False):
             raise MiddlewareNotUsed
         else:
-            self.interval = int(getattr(settings, 'DJANGO_WATCHDOG_TIMER', 25))
+            self.interval = int(getattr(settings, 'DOGSLOW_TIMER', 25))
             self.timer = Timer()
             self.timer.setDaemon(True)
             self.timer.start()
@@ -121,7 +121,7 @@ class WatchdogMiddleware(object):
 
             # dump to file:
             fd, fn = tempfile.mkstemp(prefix='slow_request_', suffix='.log',
-                                      dir=getattr(settings, 'DJANGO_WATCHDOG_OUTPUT',
+                                      dir=getattr(settings, 'DOGSLOW_OUTPUT',
                                               tempfile.gettempdir()))
             try:
                 os.write(fd, output)
@@ -129,12 +129,12 @@ class WatchdogMiddleware(object):
                 os.close(fd)
 
             # and email?
-            if hasattr(settings, 'DJANGO_WATCHDOG_EMAIL_TO')\
-                    and hasattr(settings, 'DJANGO_WATCHDOG_EMAIL_FROM'):
+            if hasattr(settings, 'DOGSLOW_EMAIL_TO')\
+                    and hasattr(settings, 'DOGSLOW_EMAIL_FROM'):
                 em = EmailMessage('Slow Request Watchdog: %s' % str(req_string),
                                   output,
-                                  getattr(settings, 'DJANGO_WATCHDOG_EMAIL_FROM'),
-                                  (getattr(settings, 'DJANGO_WATCHDOG_EMAIL_TO'),))
+                                  getattr(settings, 'DOGSLOW_EMAIL_FROM'),
+                                  (getattr(settings, 'DOGSLOW_EMAIL_TO'),))
                 em.send(fail_silently=True)
 
         except Exception:
@@ -151,7 +151,7 @@ class WatchdogMiddleware(object):
 
     def _cancel(self, request):
         try:
-            if hasattr(request, 'django_watchdog'):
+            if hasattr(request, 'dogslow'):
                 self.timer.cancel(request.django_watchdog)
                 del request.django_watchdog
         except:

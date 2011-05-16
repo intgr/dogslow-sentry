@@ -1,8 +1,6 @@
 #!/usr/bin/env python
-"""Installs cram"""
 
-import os
-import sys
+import os, sys
 from distutils.core import setup
 
 def long_description():
@@ -23,12 +21,12 @@ setup(
         'Topic :: Utilities',
     ],
     description='A Django middleware that logs tracebacks of slow requests.',
-    download_url='https://bitbucket.org/evzijst/django_watchdog/django_watchdog-0.1.tar.gz',
+    download_url='https://bitbucket.org/evzijst/dogslow/dogslow-0.1.tar.gz',
     keywords='django debug watchdog middleware',
     license='GNU LGPL',
     long_description=long_description(),
-    name='django_watchdog',
-    py_modules=['django_watchdog'],
-    url='https://bitbucket.org/evzijst/django_watchdog',
+    name='dogslow',
+    packages=['dogslow'],
+    url='https://bitbucket.org/evzijst/dogslow',
     version='0.1',
 )
