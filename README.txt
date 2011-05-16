@@ -45,3 +45,67 @@ file to tune the watchdog::
     # When both specified, emails backtraces:
     DOGSLOW_EMAIL_TO = 'errors@atlassian.com'
     DOGSLOW_EMAIL_FROM = 'no-reply@atlassian.com'
+
+
+Usage
+-----
+
+Every incoming HTTP request gets a 25 second timeout in the watchdog. If a
+request does not return within that time, the watchdog activates and takes a
+peek at the request thread's stack and writes the backtrace (including all
+local stack variables -- Django style) to a log file.
+
+Each slow request is logged in a separate file that looks like this::
+
+    Undead request intercepted at: 16-05-2011 02:10:12 UTC
+
+    GET http://localhost:8000/?delay=2
+    Thread ID:  140539485042432
+    Process ID: 18010
+    Parent PID: 17762
+    Started:    16-05-2011 02:10:10 UTC
+
+      File "/home/erik/work/virtualenv/bit/lib/python2.7/site-packages/django/core/management/commands/runserver.py", line 107, in inner_run
+        run(self.addr, int(self.port), handler, ipv6=self.use_ipv6)
+      File "/home/erik/work/virtualenv/bit/lib/python2.7/site-packages/django/core/servers/basehttp.py", line 696, in run
+        httpd.serve_forever()
+      File "/usr/lib/python2.7/SocketServer.py", line 227, in serve_forever
+        self._handle_request_noblock()
+      File "/usr/lib/python2.7/SocketServer.py", line 284, in _handle_request_noblock
+        self.process_request(request, client_address)
+      File "/usr/lib/python2.7/SocketServer.py", line 310, in process_request
+        self.finish_request(request, client_address)
+      File "/usr/lib/python2.7/SocketServer.py", line 323, in finish_request
+        self.RequestHandlerClass(request, client_address, self)
+      File "/home/erik/work/virtualenv/bit/lib/python2.7/site-packages/django/core/servers/basehttp.py", line 570, in __init__
+        BaseHTTPRequestHandler.__init__(self, *args, **kwargs)
+      File "/usr/lib/python2.7/SocketServer.py", line 639, in __init__
+        self.handle()
+      File "/home/erik/work/virtualenv/bit/lib/python2.7/site-packages/django/core/servers/basehttp.py", line 615, in handle
+        handler.run(self.server.get_app())
+      File "/home/erik/work/virtualenv/bit/lib/python2.7/site-packages/django/core/servers/basehttp.py", line 283, in run
+        self.result = application(self.environ, self.start_response)
+      File "/home/erik/work/virtualenv/bit/lib/python2.7/site-packages/django/contrib/staticfiles/handlers.py", line 68, in __call__
+        return self.application(environ, start_response)
+      File "/home/erik/work/virtualenv/bit/lib/python2.7/site-packages/django/core/handlers/wsgi.py", line 273, in __call__
+        response = self.get_response(request)
+      File "/home/erik/work/virtualenv/bit/lib/python2.7/site-packages/django/core/handlers/base.py", line 111, in get_response
+        response = callback(request, *callback_args, **callback_kwargs)
+      File "/home/erik/work/middleware/middleware/sleep/views.py", line 6, in sleep
+        time.sleep(float(request.GET.get('delay', 1)))
+
+    Full backtrace with local variables:
+
+      File "/home/erik/work/virtualenv/bit/lib/python2.7/site-packages/django/core/management/commands/runserver.py", line 107, in inner_run
+        run(self.addr, int(self.port), handler, ipv6=self.use_ipv6)
+
+      ...loads more...
+
+The example above shows that the request thread was blocked in
+``time.sleep()`` at the time ``dogslow`` took its snapshot.
+
+Requests that return before ``dogslow``'s timeout expires do not get logged.
+
+Note that ``dogslow`` only takes a peek at the thread's stack. It does not
+interrupt the request, or influence it in any other way. Using ``dogslow`` is
+therefore safe to use in production.
