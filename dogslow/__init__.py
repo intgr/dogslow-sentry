@@ -142,7 +142,7 @@ class WatchdogMiddleware(object):
 
 
     def process_request(self, request):
-        request.django_watchdog = self.timer.run_later(
+        request.dogslow = self.timer.run_later(
             WatchdogMiddleware.peek,
             self.interval,
             request,
@@ -152,8 +152,8 @@ class WatchdogMiddleware(object):
     def _cancel(self, request):
         try:
             if hasattr(request, 'dogslow'):
-                self.timer.cancel(request.django_watchdog)
-                del request.django_watchdog
+                self.timer.cancel(request.dogslow)
+                del request.dogslow
         except:
             logging.exception('Failed to cancel request watchdog')
 
