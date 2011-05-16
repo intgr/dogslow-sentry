@@ -130,24 +130,25 @@ Releasing the GIL is done automatically whenever a Python program makes
 blocking calls outside of the interpreter, for example when doing IO.
 
 For ``dogslow`` this means that it can only reliably intercept requests that
-are slow because they are doing IO, calling sleep or doing waiting to acquire
+are slow because they are doing IO, calling sleep or busy waiting to acquire
 locks themselves.
 
-In most cases this is fine. an important cause of slow Django requests is an
-expensive database query. Since this is IO, dogslow can intercept those fine.
-A scenario where cPython's GIL is problematic is when the requests thread hits
+In most cases this is fine. An important cause of slow Django requests is an
+expensive database query. Since this is IO, ``dogslow`` can intercept those fine.
+A scenario where cPython's GIL is problematic is when the request's thread hits
 an infinite loop in Python code (or legitimate Python that is extremely
 expensive and takes a long time to execute), never releasing the GIL. Even
-though ``dogslow``'s watchdog timer does become runnable, it cannot take log
-the stack.
+though ``dogslow``'s watchdog timer does become runnable, it cannot log the
+stack.
 
 
 Co-routines and Greenlets
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Dogslow is intended for use in a synchronous worker configuration. A webserver
-that uses dedicated threads to serve requests. Django's built-in wsgi server
-does this, as does Gunicorn in sync-worker mode.
+``Dogslow`` is intended for use in a synchronous worker configuration. A
+webserver that uses dedicated threads (or single-threaded, dedicated worker
+processes) to serve requests. Django's built-in wsgi server does this, as
+does ``Gunicorn`` in its default sync-worker mode.
 
 When running with a "co-routines framework" where multiple requests are served
 concurrently by one thread, backtraces might become nonsensical.
