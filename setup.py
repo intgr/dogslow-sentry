@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# Installs dogslow.
 
 import os, sys
 from distutils.core import setup
