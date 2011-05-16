@@ -94,7 +94,7 @@ class Timer(threading.Thread):
                 elif self._get_sleep_time() > 0:
                     self.lock.wait(self._get_sleep_time())
                 else:
-                    job, timeout= self._jobs.pop(0)
+                    job, timeout = self._jobs.pop(0)
                     job.run()
         finally:
             self.lock.release()
