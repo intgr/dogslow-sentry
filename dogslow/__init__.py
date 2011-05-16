@@ -78,7 +78,7 @@ def stack(f, with_locals=False):
 class WatchdogMiddleware(object):
 
     def __init__(self):
-        if not getattr(settings, 'DOGSLOW', False):
+        if not getattr(settings, 'DOGSLOW', True):
             raise MiddlewareNotUsed
         else:
             self.interval = int(getattr(settings, 'DOGSLOW_TIMER', 25))
