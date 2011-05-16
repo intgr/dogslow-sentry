@@ -109,3 +109,45 @@ Requests that return before ``dogslow``'s timeout expires do not get logged.
 Note that ``dogslow`` only takes a peek at the thread's stack. It does not
 interrupt the request, or influence it in any other way. Using ``dogslow`` is
 therefore safe to use in production.
+
+
+Caveats
+-------
+
+Dogslow uses multithreading. It has a single background thread the handles the
+watchdog timeouts and takes the tracebacks, so that the original request
+threads are not interrupted. This has some consequences.
+
+
+Multithreading and the GIL
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In cPython, the GIL (Global Interpreter Lock) prevents multiple threads from
+executing Python code simultaneously. Only when a thread explicitly releases
+its lock on the GIL, can a second thread run.
+
+Releasing the GIL is done automatically whenever a Python program makes
+blocking calls outside of the interpreter, for example when doing IO.
+
+For ``dogslow`` this means that it can only reliably intercept requests that
+are slow because they are doing IO, calling sleep or doing waiting to acquire
+locks themselves.
+
+In most cases this is fine. an important cause of slow Django requests is an
+expensive database query. Since this is IO, dogslow can intercept those fine.
+A scenario where cPython's GIL is problematic is when the requests thread hits
+an infinite loop in Python code (or legitimate Python that is extremely
+expensive and takes a long time to execute), never releasing the GIL. Even
+though ``dogslow``'s watchdog timer does become runnable, it cannot take log
+the stack.
+
+
+Co-routines and Greenlets
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Dogslow is intended for use in a synchronous worker configuration. A webserver
+that uses dedicated threads to serve requests. Django's built-in wsgi server
+does this, as does Gunicorn in sync-worker mode.
+
+When running with a "co-routines framework" where multiple requests are served
+concurrently by one thread, backtraces might become nonsensical.
