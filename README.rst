@@ -12,6 +12,8 @@ requests.
 It started as an `internal project inside Bitbucket`_ to help trace
 operational problems.
 
+.. _internal project inside Bitbucket: http://blog.bitbucket.org/2011/05/17/tracking-slow-requests-with-dogslow/
+
 
 Installation
 ------------
@@ -155,6 +157,3 @@ does ``Gunicorn`` in its default sync-worker mode.
 
 When running with a "co-routines framework" where multiple requests are served
 concurrently by one thread, backtraces might become nonsensical.
-
-
-.. _internal project inside Bitbucket: http://blog.bitbucket.org/2011/05/17/tracking-slow-requests-with-dogslow/
