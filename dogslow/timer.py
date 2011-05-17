@@ -83,9 +83,10 @@ class Timer(threading.Thread):
             return scheduled_at - time.time()
 
     def run(self):
-        self.lock.acquire()
-        try:
-            while True:
+        while True:
+            self.lock.acquire()
+            job = None
+            try:
                 if not self._jobs:
                     if self.die:
                         break
@@ -95,7 +96,9 @@ class Timer(threading.Thread):
                     self.lock.wait(self._get_sleep_time())
                 else:
                     job, timeout = self._jobs.pop(0)
-                    job.run()
-        finally:
-            self.lock.release()
+            finally:
+                self.lock.release()
 
+            if job:
+                # invoke the task without holding the lock
+                job.run()
