@@ -6,7 +6,7 @@ from distutils.core import setup
 
 def long_description():
     """Get the long description from the README"""
-    return open(os.path.join(sys.path[0], 'README.txt')).read()
+    return open(os.path.join(sys.path[0], 'README.rst')).read()
 
 setup(
     author='Erik van Zijst',
@@ -22,12 +22,12 @@ setup(
         'Topic :: Utilities',
     ],
     description='A Django middleware that logs tracebacks of slow requests.',
-    download_url='https://bitbucket.org/evzijst/dogslow/downloads/dogslow-0.4.tar.gz',
+    download_url='https://bitbucket.org/evzijst/dogslow/downloads/dogslow-0.5.tar.gz',
     keywords='django debug watchdog middleware',
     license='GNU LGPL',
     long_description=long_description(),
     name='dogslow',
     packages=['dogslow'],
     url='https://bitbucket.org/evzijst/dogslow',
-    version='0.4',
+    version='0.5',
 )
