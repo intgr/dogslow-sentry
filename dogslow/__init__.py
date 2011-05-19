@@ -3,7 +3,7 @@ import logging
 import pprint
 import sys
 import tempfile
-import threading
+import thread
 import linecache
 import os
 import datetime as dt
@@ -62,7 +62,7 @@ def stack(f, with_locals=False):
             out.append('    %s' % line.strip())
 
         if with_locals:
-            args = inspect.formatargvalues(*args, formatvalue=formatvalue)
+            args = inspect.formatargvalues(formatvalue=formatvalue, *args)
             out.append('\n      Arguments: %s%s' % (name, args))
 
         if with_locals and localvars:
@@ -146,7 +146,7 @@ class WatchdogMiddleware(object):
             WatchdogMiddleware.peek,
             self.interval,
             request,
-            threading.currentThread().ident,
+            thread.get_ident(),
             dt.datetime.utcnow())
 
     def _cancel(self, request):
