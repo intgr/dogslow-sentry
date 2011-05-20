@@ -21,6 +21,7 @@ setup(
         'Programming Language :: Python :: 2.5',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
+        'Topic :: Software Development :: Debuggers',
         'Topic :: Utilities',
     ],
     description='A Django middleware that logs tracebacks of slow requests.',
