@@ -6,7 +6,7 @@ Dogslow -- Django Slow Request Watchdog
 Overview
 --------
 
-Dogslow is Django watchdog middleware class that logs tracebacks of slow
+Dogslow is a Django watchdog middleware class that logs tracebacks of slow
 requests.
 
 It started as an `internal project inside Bitbucket`_ to help trace
