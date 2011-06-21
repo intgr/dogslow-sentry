@@ -137,6 +137,10 @@ class WatchdogMiddleware(object):
                                   (getattr(settings, 'DOGSLOW_EMAIL_TO'),))
                 em.send(fail_silently=True)
 
+            if hasattr(settings, 'DOGSLOW_LOGGER'):
+                logger = logging.getLogger(getattr(settings, 'DOGSLOW_LOGGER'))
+                logger.warn('Slow Request Watchdog: %s - %s', str(req_string), output)
+
         except Exception:
             logging.exception('Request watchdog failed')
 
