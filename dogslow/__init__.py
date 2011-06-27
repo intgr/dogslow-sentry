@@ -11,7 +11,11 @@ import datetime as dt
 from django.conf import settings
 from django.core.exceptions import MiddlewareNotUsed
 from django.core.mail.message import EmailMessage
+from django.core.urlresolvers import resolve
+
 from dogslow.timer import Timer
+
+IGNORE_URLS = ignore_urls = getattr(settings, 'DOGSLOW_IGNORE_URLS', ())
 
 class SafePrettyPrinter(pprint.PrettyPrinter, object):
     def format(self, obj, context, maxlevels, level):
@@ -90,7 +94,11 @@ class WatchdogMiddleware(object):
     def peek(request, thread_id, started):
         try:
             frame = sys._current_frames()[thread_id]
-
+            
+            match = resolve(request.META.get('PATH_INFO'))
+            if match.url_name in IGNORE_URLS:
+                return
+            
             req_string = '%s %s://%s%s' % (
                 request.META.get('REQUEST_METHOD'),
                 request.META.get('wsgi.url_scheme', 'http'),
