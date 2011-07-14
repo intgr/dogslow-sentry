@@ -147,7 +147,7 @@ class WatchdogMiddleware(object):
 
             if hasattr(settings, 'DOGSLOW_LOGGER'):
                 logger = logging.getLogger(getattr(settings, 'DOGSLOW_LOGGER'))
-                logger.warn('Slow Request Watchdog: %s - %s', str(req_string), output)
+                logger.warn('Slow Request Watchdog: %s, %%s - %%s' % resolve(request.META.get('PATH_INFO')).url_name, str(req_string), output)
 
         except Exception:
             logging.exception('Request watchdog failed')
