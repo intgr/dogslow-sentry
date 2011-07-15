@@ -15,8 +15,6 @@ from django.core.urlresolvers import resolve
 
 from dogslow.timer import Timer
 
-IGNORE_URLS = ignore_urls = getattr(settings, 'DOGSLOW_IGNORE_URLS', ())
-
 class SafePrettyPrinter(pprint.PrettyPrinter, object):
     def format(self, obj, context, maxlevels, level):
         try:
@@ -95,10 +93,6 @@ class WatchdogMiddleware(object):
         try:
             frame = sys._current_frames()[thread_id]
             
-            match = resolve(request.META.get('PATH_INFO'))
-            if match.url_name in IGNORE_URLS:
-                return
-            
             req_string = '%s %s://%s%s' % (
                 request.META.get('REQUEST_METHOD'),
                 request.META.get('wsgi.url_scheme', 'http'),
@@ -145,21 +139,33 @@ class WatchdogMiddleware(object):
                                   (getattr(settings, 'DOGSLOW_EMAIL_TO'),))
                 em.send(fail_silently=True)
 
+            # and a custom logger:
             if hasattr(settings, 'DOGSLOW_LOGGER'):
                 logger = logging.getLogger(getattr(settings, 'DOGSLOW_LOGGER'))
-                logger.warn('Slow Request Watchdog: %s, %%s - %%s' % resolve(request.META.get('PATH_INFO')).url_name, str(req_string), output)
+                logger.warn('Slow Request Watchdog: %s, %%s - %%s' %
+                            resolve(request.META.get('PATH_INFO')).url_name,
+                            str(req_string), output)
 
         except Exception:
             logging.exception('Request watchdog failed')
 
 
+    def _is_exempt(self, request):
+        """Returns True if this request's URL resolves to a url pattern whose
+        name is listed in settings.DOGSLOW_IGNORE_URLS.
+        """
+        match = resolve(request.META.get('PATH_INFO'))
+        return match and (match.url_name in
+                       getattr(settings, 'DOGSLOW_IGNORE_URLS', ()))
+
     def process_request(self, request):
-        request.dogslow = self.timer.run_later(
-            WatchdogMiddleware.peek,
-            self.interval,
-            request,
-            thread.get_ident(),
-            dt.datetime.utcnow())
+        if not self._is_exempt(request):
+            request.dogslow = self.timer.run_later(
+                WatchdogMiddleware.peek,
+                self.interval,
+                request,
+                thread.get_ident(),
+                dt.datetime.utcnow())
 
     def _cancel(self, request):
         try:

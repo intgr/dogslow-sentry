@@ -51,6 +51,13 @@ file to tune the watchdog::
     DOGSLOW_EMAIL_TO = 'errors@atlassian.com'
     DOGSLOW_EMAIL_FROM = 'no-reply@atlassian.com'
 
+    # Also log to this logger (defaults to none):
+    DOGSLOW_LOGGER = 'syslog_logger'
+
+    # Tuple of url pattern names that should not be monitored:
+    # (defaults to none -- everything monitored)
+    DOGSLOW_IGNORE_URLS = ('some_view', 'other_view')
+
 
 Usage
 -----
