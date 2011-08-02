@@ -58,6 +58,10 @@ file to tune the watchdog::
     # (defaults to none -- everything monitored)
     DOGSLOW_IGNORE_URLS = ('some_view', 'other_view')
 
+    # Print (potentially hugh!) local stack variables (on by default, use
+    # False for less detailed, but more manageable reports)
+    DOGSLOW_STACK_VARS = True
+
 
 Usage
 -----

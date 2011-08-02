@@ -117,9 +117,16 @@ class WatchdogMiddleware(object):
 
             output += stack(frame, with_locals=False)
             output += '\n\n'
-            output += 'Full backtrace with local variables:'
-            output += '\n\n'
-            output += stack(frame, with_locals=True)
+
+            if hasattr(settings, 'DOGSLOW_STACK_VARS') and not bool(settings.DOGSLOW_STACK_VARS):
+                # no local stack variables
+                output += 'This report does not contain the local stack variables.'
+                output += 'To enable this (very verbose) information, add this to your Django settings:'
+                output += '  DOGSLOW_STACK_VARS=True'
+            else:
+                output += 'Full backtrace with local variables:'
+                output += '\n\n'
+                output += stack(frame, with_locals=True)
 
             # dump to file:
             fd, fn = tempfile.mkstemp(prefix='slow_request_', suffix='.log',
