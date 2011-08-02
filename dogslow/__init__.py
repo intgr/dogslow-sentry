@@ -21,7 +21,7 @@ class SafePrettyPrinter(pprint.PrettyPrinter, object):
             return super(SafePrettyPrinter, self).format(
                 obj, context, maxlevels, level)
         except Exception:
-            return object.__repr__(obj)[:-1] + ' (bad repr)>'
+            return object.__repr__(obj)[:-1] + ' (bad repr)>', True, False
 
 def spformat(obj, depth=None):
     return SafePrettyPrinter(indent=1, width=76, depth=depth).pformat(obj)
