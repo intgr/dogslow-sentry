@@ -130,7 +130,7 @@ therefore safe to use in production.
 Caveats
 -------
 
-Dogslow uses multithreading. It has a single background thread the handles the
+Dogslow uses multithreading. It has a single background thread that handles the
 watchdog timeouts and takes the tracebacks, so that the original request
 threads are not interrupted. This has some consequences.
 
