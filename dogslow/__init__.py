@@ -120,9 +120,9 @@ class WatchdogMiddleware(object):
 
             if hasattr(settings, 'DOGSLOW_STACK_VARS') and not bool(settings.DOGSLOW_STACK_VARS):
                 # no local stack variables
-                output += 'This report does not contain the local stack variables.'
-                output += 'To enable this (very verbose) information, add this to your Django settings:'
-                output += '  DOGSLOW_STACK_VARS=True'
+                output += 'This report does not contain the local stack variables.\n'
+                output += 'To enable this (very verbose) information, add this to your Django settings:\n'
+                output += '  DOGSLOW_STACK_VARS=True\n'
             else:
                 output += 'Full backtrace with local variables:'
                 output += '\n\n'
