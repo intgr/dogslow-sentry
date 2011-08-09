@@ -78,7 +78,6 @@ Each slow request is logged in a separate file that looks like this::
     GET http://localhost:8000/?delay=2
     Thread ID:  140539485042432
     Process ID: 18010
-    Parent PID: 17762
     Started:    16-05-2011 02:10:10 UTC
 
       File "/home/erik/work/virtualenv/bit/lib/python2.7/site-packages/django/core/management/commands/runserver.py", line 107, in inner_run
