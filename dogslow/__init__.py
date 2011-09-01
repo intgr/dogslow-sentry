@@ -116,15 +116,20 @@ class WatchdogMiddleware(object):
             output += stack(frame, with_locals=False)
             output += '\n\n'
 
-            if hasattr(settings, 'DOGSLOW_STACK_VARS') and not bool(settings.DOGSLOW_STACK_VARS):
+            if (hasattr(settings, 'DOGSLOW_STACK_VARS')
+                    and not bool(settings.DOGSLOW_STACK_VARS)):
                 # no local stack variables
-                output += 'This report does not contain the local stack variables.\n'
-                output += 'To enable this (very verbose) information, add this to your Django settings:\n'
-                output += '  DOGSLOW_STACK_VARS=True\n'
+                output += ('This report does not contain the local stack '
+                           'variables.\n'
+                           'To enable this (very verbose) information, add '
+                           'this to your Django settings:\n'
+                           '  DOGSLOW_STACK_VARS=True\n')
             else:
                 output += 'Full backtrace with local variables:'
                 output += '\n\n'
                 output += stack(frame, with_locals=True)
+
+            output = output.encode('utf-8')
 
             # dump to file:
             fd, fn = tempfile.mkstemp(prefix='slow_request_', suffix='.log',
@@ -138,7 +143,8 @@ class WatchdogMiddleware(object):
             # and email?
             if hasattr(settings, 'DOGSLOW_EMAIL_TO')\
                     and hasattr(settings, 'DOGSLOW_EMAIL_FROM'):
-                em = EmailMessage('Slow Request Watchdog: %s' % str(req_string),
+                em = EmailMessage('Slow Request Watchdog: %s' %
+                                  req_string.encode('utf-8'),
                                   output,
                                   getattr(settings, 'DOGSLOW_EMAIL_FROM'),
                                   (getattr(settings, 'DOGSLOW_EMAIL_TO'),))
@@ -149,7 +155,7 @@ class WatchdogMiddleware(object):
                 logger = logging.getLogger(getattr(settings, 'DOGSLOW_LOGGER'))
                 logger.warn('Slow Request Watchdog: %s, %%s - %%s' %
                             resolve(request.META.get('PATH_INFO')).url_name,
-                            str(req_string), output)
+                            req_string.encode('utf-8'), output)
 
         except Exception:
             logging.exception('Request watchdog failed')
