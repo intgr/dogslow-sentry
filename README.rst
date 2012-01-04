@@ -22,7 +22,7 @@ Install dogslow::
 
     $ pip install dogslow
 
-Then add if to your list of middleware classes in your Django settings.py file::
+Then add ``dogslow.WatchdogMiddleware`` to your list of middleware classes in your Django settings.py file::
 
     MIDDLEWARE_CLASSES = (
         'dogslow.WatchdogMiddleware',
