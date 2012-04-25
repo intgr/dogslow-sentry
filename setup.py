@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # Installs dogslow.
 
-import os, sys
+import os
+import sys
 from distutils.core import setup
 
 def long_description():
@@ -15,7 +16,8 @@ setup(
         'Development Status :: 4 - Beta',
         'Framework :: Django',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)',
+        ('License :: OSI Approved :: '
+         'GNU Library or Lesser General Public License (LGPL)'),
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2.5',
@@ -25,7 +27,8 @@ setup(
         'Topic :: Utilities',
     ],
     description='A Django middleware that logs tracebacks of slow requests.',
-    download_url='https://bitbucket.org/evzijst/dogslow/downloads/dogslow-0.9.2.tar.gz',
+    download_url=('https://bitbucket.org/evzijst/dogslow/downloads/'
+                  'dogslow-0.9.2.tar.gz'),
     keywords='django debug watchdog middleware traceback',
     license='GNU LGPL',
     long_description=long_description(),

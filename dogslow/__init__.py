@@ -93,7 +93,7 @@ class WatchdogMiddleware(object):
     def peek(request, thread_id, started):
         try:
             frame = sys._current_frames()[thread_id]
-            
+
             req_string = '%s %s://%s%s' % (
                 request.META.get('REQUEST_METHOD'),
                 request.META.get('wsgi.url_scheme', 'http'),
@@ -162,7 +162,6 @@ class WatchdogMiddleware(object):
 
         except Exception:
             logging.exception('Request watchdog failed')
-
 
     def _is_exempt(self, request):
         """Returns True if this request's URL resolves to a url pattern whose
