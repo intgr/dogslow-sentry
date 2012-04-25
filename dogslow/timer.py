@@ -5,8 +5,8 @@ import time
 
 class TimerTask(object):
 
-    def __init__(self, callable, *args, **kwargs):
-        self._callable = partial(callable, *args, **kwargs)
+    def __init__(self, callable_, *args, **kwargs):
+        self._callable = partial(callable_, *args, **kwargs)
         self._finished = False
 
     def is_finished(self):
@@ -35,7 +35,7 @@ class Timer(threading.Thread):
         self._jobs = []
         self.die = False
 
-    def run_later(self, callable, timeout, *args, **kwargs):
+    def run_later(self, callable_, timeout, *args, **kwargs):
         '''Schedules the specified callable for delayed execution.
 
         Returns a TimerTask instance that can be used to cancel pending
@@ -47,7 +47,7 @@ class Timer(threading.Thread):
                 raise RuntimeError('This timer has been shut down and '
                         'does not accept new jobs.')
 
-            job = TimerTask(callable, *args, **kwargs)
+            job = TimerTask(callable_, *args, **kwargs)
             self._jobs.append((job, time.time() + timeout))
             self._jobs.sort(key=lambda job: job[1])  # sort on time
             self.lock.notify()
