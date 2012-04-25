@@ -1,0 +1,45 @@
+[MESSAGES CONTROL]
+# The design check gives mostly useless advice.
+# C0111: missing doc string
+# E1103: instance doesn't have method (inferred)
+# R0201: method could be a function
+# W0141: used range
+# W0142: * or ** arguments
+# W0201: attribute defined outside of __init__
+# W0212: access protected member
+# W0223: abstract method not overridden
+# W0702: no exception type
+# W0703: catching Exception
+disable=design,C0111,E1103,R0201,W0141,W0142,W0201,W0212,W0223,W0702,W0703
+
+[REPORTS]
+include-ids=yes
+reports=no
+
+[TYPECHECK]
+ignored-classes=
+generated-members=
+
+[BASIC]
+const-rgx=(([a-zA-Z_][a-zA-Z0-9_]{2,30})|(__[a-z0-9_]{2,30}__))$
+class-rgx=[a-zA-Z_][a-zA-Z0-9]{2,30}$
+function-rgx=[a-z_][a-z0-9_]{2,30}$
+method-rgx=[a-z_][a-z0-9_]{2,30}$
+attr-rgx=[a-z_][a-z0-9_]{0,30}$
+argument-rgx=[a-z_][a-z0-9_]{0,30}$
+variable-rgx=[a-z_][a-z0-9_]{0,30}$
+inlinevar-rgx=[A-Za-z_][A-Za-z0-9_]*$
+
+[CLASSES]
+ignore-iface-methods=
+defining-attr-methods=__init__,__new__
+
+[IMPORTS]
+deprecated-modules=regsub,TERMIOS,Bastion,rexec
+
+[FORMAT]
+max-line-length=79
+max-module-lines=5000
+
+[MISCELLANEOUS]
+notes=FIXME,XXX,TODO
