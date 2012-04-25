@@ -15,6 +15,10 @@ from django.core.urlresolvers import resolve
 
 from dogslow.timer import Timer
 
+_sentinel = object()
+def safehasattr(obj, name):
+    return getattr(obj, name, _sentinel) is not _sentinel
+
 class SafePrettyPrinter(pprint.PrettyPrinter, object):
     def format(self, obj, context, maxlevels, level):
         try:
@@ -33,10 +37,7 @@ def formatvalue(v):
     return '=' + s
 
 def stack(f, with_locals=False):
-    if hasattr(sys, 'tracebacklimit'):
-        limit = sys.tracebacklimit
-    else:
-        limit = None
+    limit = getattr(sys, 'tracebacklimit', None)
 
     frames = []
     n = 0
@@ -116,8 +117,8 @@ class WatchdogMiddleware(object):
             output += stack(frame, with_locals=False)
             output += '\n\n'
 
-            if (hasattr(settings, 'DOGSLOW_STACK_VARS')
-                    and not bool(settings.DOGSLOW_STACK_VARS)):
+            stack_vars = getattr(settings, 'DOGSLOW_STACK_VARS', False)
+            if not stack_vars:
                 # no local stack variables
                 output += ('This report does not contain the local stack '
                            'variables.\n'
@@ -141,18 +142,20 @@ class WatchdogMiddleware(object):
                 os.close(fd)
 
             # and email?
-            if hasattr(settings, 'DOGSLOW_EMAIL_TO')\
-                    and hasattr(settings, 'DOGSLOW_EMAIL_FROM'):
+            email_to = getattr(settings, 'DOGSLOW_EMAIL_TO', None)
+            email_from = getattr(settings, 'DOGSLOW_EMAIL_FROM', None)
+            if email_to is not None and email_from is not None:
                 em = EmailMessage('Slow Request Watchdog: %s' %
                                   req_string.encode('utf-8'),
                                   output,
-                                  getattr(settings, 'DOGSLOW_EMAIL_FROM'),
-                                  (getattr(settings, 'DOGSLOW_EMAIL_TO'),))
+                                  email_from,
+                                  (email_to,))
                 em.send(fail_silently=True)
 
             # and a custom logger:
-            if hasattr(settings, 'DOGSLOW_LOGGER'):
-                logger = logging.getLogger(getattr(settings, 'DOGSLOW_LOGGER'))
+            logger_name = getattr(settings, 'DOGSLOW_LOGGER', None)
+            if logger_name is not None:
+                logger = logging.getLogger(logger_name)
                 logger.warn('Slow Request Watchdog: %s, %%s - %%s' %
                             resolve(request.META.get('PATH_INFO')).url_name,
                             req_string.encode('utf-8'), output)
@@ -180,7 +183,7 @@ class WatchdogMiddleware(object):
 
     def _cancel(self, request):
         try:
-            if hasattr(request, 'dogslow'):
+            if safehasattr(request, 'dogslow'):
                 self.timer.cancel(request.dogslow)
                 del request.dogslow
         except:
