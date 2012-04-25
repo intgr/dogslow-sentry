@@ -158,7 +158,7 @@ class WatchdogMiddleware(object):
             if logger_name is not None:
                 log_level = logging.getLevelName(log_level)
                 logger = logging.getLogger(logger_name)
-                logger.log(log_level, 'Slow Request Watchdog: %s, %%s - %%s' %
+                logger.log(log_level, 'Slow Request Watchdog: %s, %s - %s',
                            resolve(request.META.get('PATH_INFO')).url_name,
                            req_string.encode('utf-8'), output)
 
