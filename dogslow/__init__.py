@@ -11,7 +11,7 @@ import datetime as dt
 from django.conf import settings
 from django.core.exceptions import MiddlewareNotUsed
 from django.core.mail.message import EmailMessage
-from django.core.urlresolvers import resolve
+from django.core.urlresolvers import resolve, Resolver404
 
 from dogslow.timer import Timer
 
@@ -167,7 +167,10 @@ class WatchdogMiddleware(object):
         """Returns True if this request's URL resolves to a url pattern whose
         name is listed in settings.DOGSLOW_IGNORE_URLS.
         """
-        match = resolve(request.META.get('PATH_INFO'))
+        try:
+            match = resolve(request.META.get('PATH_INFO'))
+        except Resolver404:
+            return False
         return match and (match.url_name in
                        getattr(settings, 'DOGSLOW_IGNORE_URLS', ()))
 
