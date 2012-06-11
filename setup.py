@@ -28,12 +28,12 @@ setup(
     ],
     description='A Django middleware that logs tracebacks of slow requests.',
     download_url=('https://bitbucket.org/evzijst/dogslow/downloads/'
-                  'dogslow-0.9.2.tar.gz'),
+                  'dogslow-0.9.3.tar.gz'),
     keywords='django debug watchdog middleware traceback',
     license='GNU LGPL',
     long_description=long_description(),
     name='dogslow',
     packages=['dogslow'],
     url='https://bitbucket.org/evzijst/dogslow',
-    version='0.9.2',
+    version='0.9.3',
 )
