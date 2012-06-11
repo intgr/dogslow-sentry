@@ -128,6 +128,21 @@ interrupt the request, or influence it in any other way. Using ``dogslow`` is
 therefore safe to use in production.
 
 
+Sentry Integration
+------------------
+
+Dogslow does not natively integrate with Sentry. However, it is possible to
+link it up to some extent by simply configuring Dogslow to use
+``DOGSLOW_LOGGER`` and ``DOGSLOW_LOG_LEVEL`` and `configure Raven`_ to collect
+Dogslow's reports.
+
+This level of integration will give you fairly crude Sentry support. Dogslow's
+reports will show up in Sentry, but will not have the nice interactive
+tracebacks that normal Django errors have. This is currently being worked on.
+
+.. _configure Raven: http://raven.readthedocs.org/en/latest/config/django.html#integration-with-logging
+
+
 Caveats
 -------
 
