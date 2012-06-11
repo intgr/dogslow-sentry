@@ -54,6 +54,7 @@ file to tune the watchdog::
 
     # Also log to this logger (defaults to none):
     DOGSLOW_LOGGER = 'syslog_logger'
+    DOGSLOW_LOG_LEVEL = 'WARNING'
 
     # Tuple of url pattern names that should not be monitored:
     # (defaults to none -- everything monitored)

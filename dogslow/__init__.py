@@ -154,11 +154,14 @@ class WatchdogMiddleware(object):
 
             # and a custom logger:
             logger_name = getattr(settings, 'DOGSLOW_LOGGER', None)
+            log_level = getattr(settings, 'DOGSLOW_LOG_LEVEL', 'WARNING')
             if logger_name is not None:
+                log_level = logging.getLevelName(log_level)
                 logger = logging.getLogger(logger_name)
-                logger.warn('Slow Request Watchdog: %s, %%s - %%s' %
-                            resolve(request.META.get('PATH_INFO')).url_name,
-                            req_string.encode('utf-8'), output)
+                logger.log(log_level, 'Slow Request Watchdog: %s, %s - %s',
+                           resolve(request.META.get('PATH_INFO')).url_name,
+                           req_string.encode('utf-8'), output,
+                           extra={'request': request})
 
         except Exception:
             logging.exception('Request watchdog failed')
