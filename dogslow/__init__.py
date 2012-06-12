@@ -1,12 +1,13 @@
+import datetime as dt
 import inspect
 import logging
+import os
 import pprint
+import socket
 import sys
 import tempfile
 import thread
 import linecache
-import os
-import datetime as dt
 
 from django.conf import settings
 from django.core.exceptions import MiddlewareNotUsed
@@ -105,11 +106,13 @@ class WatchdogMiddleware(object):
 
             output = 'Undead request intercepted at: %s\n\n' \
                 '%s\n' \
+                'Hostname:   %s\n' \
                 'Thread ID:  %d\n' \
                 'Process ID: %d\n' \
                 'Started:    %s\n\n' % \
                     (dt.datetime.utcnow().strftime("%d-%m-%Y %H:%M:%S UTC"),
                      req_string,
+                     socket.gethostname(),
                      thread_id,
                      os.getpid(),
                      started.strftime("%d-%m-%Y %H:%M:%S UTC"),)
