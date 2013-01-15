@@ -131,8 +131,8 @@ therefore safe to use in production.
 Sentry Integration
 ------------------
 
-Dogslow natively integrates with Sentry. It's done by configuring Dogslow to use
-``DOGSLOW_LOGGER`` and ``DOGSLOW_LOG_TO_SENTRY`` and 
+Dogslow natively integrates with Sentry. You can set it up by configuring
+Dogslow to use ``DOGSLOW_LOGGER`` and ``DOGSLOW_LOG_TO_SENTRY`` and by
 `configuring Raven`_ to collect Dogslow's reports. ::
 
     DOGSLOW_LOGGER = 'dogslow' # can be anything, but must match `logger` below
