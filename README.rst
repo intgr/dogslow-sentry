@@ -140,13 +140,14 @@ Dogslow to use ``DOGSLOW_LOGGER`` and ``DOGSLOW_LOG_TO_SENTRY`` and by
     
     DOGSLOW_LOG_LEVEL = 'WARNING' # optional, defaults to 'WARNING'
     
-    # change the sentry handler to handle WARNINGs, or create a new handler
-    # just for dogslow with the SentryHandler
+    # Add a new sentry handler to handle WARNINGs. It's not recommended to
+    # modify the existing sentry handler, as you'll probably start seeing
+    # other warnings unnecessarily sent to Sentry.
     LOGGING = {
         ...
         'handlers': {
             ...
-            'sentry': {
+            'dogslow': {
                 'level': 'WARNING',
                 'class': 'raven.contrib.django.handlers.SentryHandler',
             }
@@ -156,7 +157,7 @@ Dogslow to use ``DOGSLOW_LOGGER`` and ``DOGSLOW_LOG_TO_SENTRY`` and by
             ...
             'dogslow': {
                 'level': 'WARNING',
-                'handlers': ['sentry'], # or whatever you named your handler
+                'handlers': ['dogslow'], # or whatever you named your handler
             }
             ...
         }
