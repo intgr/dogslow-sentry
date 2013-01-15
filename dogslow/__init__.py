@@ -158,18 +158,50 @@ class WatchdogMiddleware(object):
             # and a custom logger:
             logger_name = getattr(settings, 'DOGSLOW_LOGGER', None)
             log_level = getattr(settings, 'DOGSLOW_LOG_LEVEL', 'WARNING')
+            log_to_sentry = getattr(settings, 'DOGSLOW_LOG_TO_SENTRY', False)
             if logger_name is not None:
                 log_level = logging.getLevelName(log_level)
                 logger = logging.getLogger(logger_name)
+                
+                # we're passing the Django request object along
+                # with the log call in case we're being used with
+                # Sentry:
+                extra = {'request': request}
+                
+                # if this is not going to Sentry,
+                # then we'll use the original msg
+                if not log_to_sentry:
+                    msg = 'Slow Request Watchdog: %s, %s - %s' % (
+                        resolve(request.META.get('PATH_INFO')).url_name,
+                        req_string.encode('utf-8'),
+                        output
+                    )
+                
+                # if it is going to Sentry,
+                # we instead want to format differently and send more in extra
+                else:
+                    msg = 'Slow Request Watchdog: %s' % request.META.get('PATH_INFO')
+                    
+                    module = inspect.getmodule(frame.f_code)
+                    
+                    # This is a bizarre construct, `module` in `function`, but
+                    # this is how all stack traces are formatted.
+                    extra['culprit'] = '%s in %s' % (module.__name__, frame.f_code.co_name)
+                    
+                    # We've got to simply the stack, because raven only accepts
+                    # a list of 2-tuples of (frame, lineno).
+                    # This is a list comprehension split over a few lines.
+                    extra['stack'] = [
+                        (frame, lineno) 
+                        for frame, filename, lineno, function, code_context, index
+                        in inspect.getouterframes(frame)
+                    ]
+                    
+                    # Lastly, we have to reverse the order of the frames
+                    # because getouterframes() gives it to you backwards.
+                    extra['stack'].reverse()
 
-                logger.log(log_level, 'Slow Request Watchdog: %s, %s - %s',
-                           resolve(request.META.get('PATH_INFO')).url_name,
-                           req_string.encode('utf-8'),
-                           output,
-                           # we're passing the Django request object along
-                           # with the log call in case we're being used with
-                           # Sentry:
-                           extra={'request': request})
+                logger.log(log_level, msg, extra=extra)
 
         except Exception:
             logging.exception('Request watchdog failed')

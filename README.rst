@@ -131,16 +131,40 @@ therefore safe to use in production.
 Sentry Integration
 ------------------
 
-Dogslow does not natively integrate with Sentry. However, it is possible to
-link it up to some extent by simply configuring Dogslow to use
-``DOGSLOW_LOGGER`` and ``DOGSLOW_LOG_LEVEL`` and `configure Raven`_ to collect
-Dogslow's reports.
+Dogslow natively integrates with Sentry. It's done by configuring Dogslow to use
+``DOGSLOW_LOGGER`` and ``DOGSLOW_LOG_TO_SENTRY`` and 
+`configuring Raven`_ to collect Dogslow's reports. ::
 
-This level of integration will give you fairly crude Sentry support. Dogslow's
-reports will show up in Sentry, but will not have the nice interactive
-tracebacks that normal Django errors have. This is currently being worked on.
+    DOGSLOW_LOGGER = 'dogslow' # can be anything, but must match `logger` below
+    DOGSLOW_LOG_TO_SENTRY = True
+    
+    DOGSLOW_LOG_LEVEL = 'WARNING' # optional, defaults to warning
+    
+    # change the sentry handler to handle WARNINGs, or create a new handler
+    # just for dogslow with the SentryHandler
+    LOGGING = {
+        ...
+        'handlers': {
+            ...
+            'sentry': {
+                'level': 'WARNING',
+                'class': 'raven.contrib.django.handlers.SentryHandler',
+            }
+            ...
+        }
+        'loggers': {
+            ...
+            'dogslow': {
+                'level': 'WARNING',
+                'handlers': ['sentry'], # or whatever you named your handler
+            }
+            ...
+        }
+        ...
+    }
+    
 
-.. _configure Raven: http://raven.readthedocs.org/en/latest/config/django.html#integration-with-logging
+.. _configuring Raven: http://raven.readthedocs.org/en/latest/config/django.html#integration-with-logging
 
 
 Caveats
