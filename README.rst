@@ -138,7 +138,7 @@ Dogslow to use ``DOGSLOW_LOGGER`` and ``DOGSLOW_LOG_TO_SENTRY`` and by
     DOGSLOW_LOGGER = 'dogslow' # can be anything, but must match `logger` below
     DOGSLOW_LOG_TO_SENTRY = True
     
-    DOGSLOW_LOG_LEVEL = 'WARNING' # optional, defaults to warning
+    DOGSLOW_LOG_LEVEL = 'WARNING' # optional, defaults to 'WARNING'
     
     # change the sentry handler to handle WARNINGs, or create a new handler
     # just for dogslow with the SentryHandler
