@@ -188,7 +188,7 @@ class WatchdogMiddleware(object):
                     # this is how all stack traces are formatted.
                     extra['culprit'] = '%s in %s' % (module.__name__, frame.f_code.co_name)
                     
-                    # We've got to simply the stack, because raven only accepts
+                    # We've got to simplify the stack, because raven only accepts
                     # a list of 2-tuples of (frame, lineno).
                     # This is a list comprehension split over a few lines.
                     extra['stack'] = [
@@ -204,7 +204,7 @@ class WatchdogMiddleware(object):
                 logger.log(log_level, msg, extra=extra)
 
         except Exception:
-            logging.exception('Request watchdog failed')
+            logging.exception('Dogslow failed')
 
     def _is_exempt(self, request):
         """Returns True if this request's URL resolves to a url pattern whose
@@ -231,8 +231,8 @@ class WatchdogMiddleware(object):
             if safehasattr(request, 'dogslow'):
                 self.timer.cancel(request.dogslow)
                 del request.dogslow
-        except:
-            logging.exception('Failed to cancel request watchdog')
+        except Exception:
+            logging.exception('Failed to cancel Dogslow timer')
 
     def process_response(self, request, response):
         self._cancel(request)
