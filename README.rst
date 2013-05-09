@@ -42,7 +42,9 @@ file to tune the watchdog::
     # Watchdog is enabled by default, to temporarily disable, set to False:
     DOGSLOW = True
 
-    # Location where Watchdog stores its log files:
+    # By default, Watchdog will create log files with the backtraces.
+    # You can also set the location where it stores them:
+    DOGSLOW_LOG_TO_FILE = True
     DOGSLOW_OUTPUT = '/tmp'
 
     # Log requests taking longer than 25 seconds:
