@@ -181,7 +181,7 @@ class WatchdogMiddleware(object):
                        'variables.\n'
                        'To enable this (very verbose) information, add '
                        'this to your Django settings:\n'
-                       '  DOGSLOW_STACK_VARS=True\n')
+                       '  DOGSLOW_STACK_VARS = True\n')
         else:
             output += 'Full backtrace with local variables:'
             output += '\n\n'
