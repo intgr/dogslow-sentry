@@ -60,6 +60,7 @@ file to tune the watchdog::
 
     # Tuple of url pattern names that should not be monitored:
     # (defaults to none -- everything monitored)
+    # Note: this option is not compatible with Django < 1.3
     DOGSLOW_IGNORE_URLS = ('some_view', 'other_view')
 
     # Print (potentially huge!) local stack variables (off by default, use

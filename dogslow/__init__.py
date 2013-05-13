@@ -230,12 +230,15 @@ class WatchdogMiddleware(object):
         """Returns True if this request's URL resolves to a url pattern whose
         name is listed in settings.DOGSLOW_IGNORE_URLS.
         """
-        try:
-            match = resolve(request.META.get('PATH_INFO'))
-        except Resolver404:
+        exemptions = getattr(settings, 'DOGSLOW_IGNORE_URLS', ())
+        if exemptions:
+            try:
+                match = resolve(request.META.get('PATH_INFO'))
+            except Resolver404:
+                return False
+            return match and (match.url_name in exemptions)
+        else:
             return False
-        return match and (match.url_name in
-                          getattr(settings, 'DOGSLOW_IGNORE_URLS', ()))
 
     def process_request(self, request):
         if not self._is_exempt(request):
