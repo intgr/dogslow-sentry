@@ -77,7 +77,7 @@ def stack(f, with_locals=False):
                 reprs = "failed to format local variables"
             out += ['      ' + l for l in reprs.splitlines()]
             out.append('')
-    return '\n'.join(out)
+    return '\n'.join(out).decode('utf-8', 'replace')
 
 class WatchdogMiddleware(object):
 
