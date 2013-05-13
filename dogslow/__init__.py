@@ -121,8 +121,8 @@ class WatchdogMiddleware(object):
 
             # This is a bizarre construct, `module` in `function`, but
             # this is how all stack traces are formatted.
-            extra['culprit'] = '%s in %s' % (
-            module.__name__, frame.f_code.co_name)
+            extra['culprit'] = '%s in %s' % (module.__name__,
+                                             frame.f_code.co_name)
 
             # We've got to simplify the stack, because raven only accepts
             # a list of 2-tuples of (frame, lineno).
@@ -235,7 +235,7 @@ class WatchdogMiddleware(object):
         except Resolver404:
             return False
         return match and (match.url_name in
-                       getattr(settings, 'DOGSLOW_IGNORE_URLS', ()))
+                          getattr(settings, 'DOGSLOW_IGNORE_URLS', ()))
 
     def process_request(self, request):
         if not self._is_exempt(request):

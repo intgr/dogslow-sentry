@@ -46,7 +46,7 @@ class Timer(threading.Thread):
         try:
             if self.die:
                 raise RuntimeError('This timer has been shut down and '
-                        'does not accept new jobs.')
+                                   'does not accept new jobs.')
 
             job = TimerTask(callable_, *args, **kwargs)
             self._jobs.append((job, time.time() + timeout))
@@ -61,7 +61,7 @@ class Timer(threading.Thread):
         self.lock.acquire()
         try:
             self._jobs = filter(lambda job: job[0] is not timer_task,
-                                       self._jobs)
+                                self._jobs)
             self.lock.notify()
         finally:
             self.lock.release()
