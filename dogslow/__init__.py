@@ -186,8 +186,7 @@ class WatchdogMiddleware(object):
             output += 'Full backtrace with local variables:'
             output += '\n\n'
             output += stack(frame, with_locals=True)
-        output = output.encode('utf-8')
-        return output
+        return output.encode('utf-8')
 
     @staticmethod
     def peek(request, thread_id, started):

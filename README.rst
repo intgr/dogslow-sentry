@@ -181,7 +181,7 @@ threads are not interrupted. This has some consequences.
 Multithreading and the GIL
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In cPython, the GIL (Global Interpreter Lock) prevents multiple threads from
+In CPython, the GIL (Global Interpreter Lock) prevents multiple threads from
 executing Python code simultaneously. Only when a thread explicitly releases
 its lock on the GIL, can a second thread run.
 
@@ -193,12 +193,12 @@ are slow because they are doing IO, calling sleep or busy waiting to acquire
 locks themselves.
 
 In most cases this is fine. An important cause of slow Django requests is an
-expensive database query. Since this is IO, ``dogslow`` can intercept those fine.
-A scenario where cPython's GIL is problematic is when the request's thread hits
-an infinite loop in Python code (or legitimate Python that is extremely
-expensive and takes a long time to execute), never releasing the GIL. Even
-though ``dogslow``'s watchdog timer does become runnable, it cannot log the
-stack.
+expensive database query. Since this is IO, ``dogslow`` can intercept those
+fine. A scenario where CPython's GIL is problematic is when the request's
+thread hits an infinite loop in Python code (or legitimate Python that is
+extremely expensive and takes a long time to execute), never releasing the
+GIL. Even though ``dogslow``'s watchdog timer thread does become runnable, it
+cannot log the stack.
 
 
 Co-routines and Greenlets
