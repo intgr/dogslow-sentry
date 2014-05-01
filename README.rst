@@ -43,7 +43,7 @@ file to tune the watchdog::
     DOGSLOW = True
 
     # By default, Watchdog will create log files with the backtraces.
-    # You can also set the location where it stores them:
+    # You can also set the location of where it stores them:
     DOGSLOW_LOG_TO_FILE = True
     DOGSLOW_OUTPUT = '/tmp'
 
