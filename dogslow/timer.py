@@ -30,7 +30,7 @@ class Timer(threading.Thread):
 
     def __init__(self, group=None, target=None, name=None, args=(),
                  kwargs=None, verbose=None):
-        super(Timer, self).__init__(group, target, name, args, kwargs, verbose)
+        super(Timer, self).__init__(group, target, name, args, kwargs)
 
         self.lock = threading.Condition()
         self._jobs = []
