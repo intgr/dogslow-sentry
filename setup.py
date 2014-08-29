@@ -32,7 +32,7 @@ setup(
     keywords='django debug watchdog middleware traceback',
     license='GNU LGPL',
     long_description=long_description(),
-    name='dogslow',
+    name='ncbi-dogslow',
     packages=['dogslow'],
     url='https://bitbucket.org/evzijst/dogslow',
     version='0.9.7',
