@@ -80,7 +80,10 @@ def stack(f, with_locals=False):
                 reprs = "failed to format local variables"
             out += ['      ' + l for l in reprs.splitlines()]
             out.append('')
-    return '\n'.join(out).decode('utf-8', 'replace')
+    res = '\n'.join(out)
+    if isinstance(res, bytes):
+        res = res.decode('utf-8', 'replace')
+    return res
 
 class WatchdogMiddleware(object):
 
