@@ -6,7 +6,10 @@ import pprint
 import socket
 import sys
 import tempfile
-import thread
+try:
+    import _thread as thread
+except ImportError:
+    import thread
 import linecache
 
 from django.conf import settings
