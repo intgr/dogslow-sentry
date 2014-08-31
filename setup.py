@@ -36,5 +36,4 @@ setup(
     packages=['dogslow'],
     url='https://bitbucket.org/evzijst/dogslow',
     version='0.9.7',
-    use_2to3=True,
 )
