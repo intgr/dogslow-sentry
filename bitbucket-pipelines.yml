@@ -5,7 +5,7 @@ pipelines:
     master:
       - step:
           script:
-            - ./deploy.sh
+            - ./deploy.py
 
   custom:
     deploy:
