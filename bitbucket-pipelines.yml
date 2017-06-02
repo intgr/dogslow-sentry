@@ -11,4 +11,4 @@ pipelines:
     deploy:
       - step:
           script:
-            - ./deploy.sh
+            - ./deploy.py
