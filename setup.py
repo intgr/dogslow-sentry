@@ -27,8 +27,6 @@ setup(
         'Topic :: Utilities',
     ],
     description='A Django middleware that logs tracebacks of slow requests.',
-    download_url=('https://bitbucket.org/evzijst/dogslow/downloads/'
-                  'dogslow-0.9.8-rc2.tar.gz'),
     keywords='django debug watchdog middleware traceback',
     license='GNU LGPL',
     long_description=long_description(),
@@ -36,5 +34,5 @@ setup(
     packages=['dogslow'],
     url='https://bitbucket.org/evzijst/dogslow',
     install_requires=['django'],
-    version='0.9.8-rc2',
+    version='0.9.8-rc3',
 )
