@@ -12,3 +12,9 @@ pipelines:
       - step:
           script:
             - ./deploy.py
+
+  default:
+    - step:
+        script:
+          - pip install -U tox
+          - tox
