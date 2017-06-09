@@ -1,3 +1,4 @@
+import codecs
 import datetime as dt
 import inspect
 import logging
@@ -18,6 +19,18 @@ from django.core.mail.message import EmailMessage
 from django.core.urlresolvers import resolve, Resolver404
 
 from dogslow.timer import Timer
+
+# The errors= parameter of str.encode() in _compose_output:
+#
+# 'surrogatepass' was added in 3.1.
+encoding_error_handler = 'surrogatepass'
+try:
+    codecs.lookup_error(encoding_error_handler)
+except LookupError:
+    # In python 2.7, surrogates don't seem to trigger the error handler.
+    # I'm going with 'replace' for consistency with the `stack` function,
+    # although I'm not clear on whether this will ever get triggered.
+    encoding_error_handler = 'replace'
 
 _sentinel = object()
 def safehasattr(obj, name):
@@ -127,8 +140,9 @@ class WatchdogMiddleware(object):
 
             # This is a bizarre construct, `module` in `function`, but
             # this is how all stack traces are formatted.
-            extra['culprit'] = '%s in %s' % (module.__name__,
-                                             frame.f_code.co_name)
+            extra['culprit'] = '%s in %s' % (
+                getattr(module, '__name__', '(unknown module)'),
+                frame.f_code.co_name)
 
             # We've got to simplify the stack, because raven only accepts
             # a list of 2-tuples of (frame, lineno).
@@ -192,7 +206,7 @@ class WatchdogMiddleware(object):
             output += 'Full backtrace with local variables:'
             output += '\n\n'
             output += stack(frame, with_locals=True)
-        return output.encode('utf-8')
+        return output.encode('utf-8', errors=encoding_error_handler)
 
     @staticmethod
     def peek(request, thread_id, started):
