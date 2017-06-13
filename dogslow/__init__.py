@@ -32,12 +32,6 @@ except LookupError:
     # although I'm not clear on whether this will ever get triggered.
     encoding_error_handler = 'replace'
 
-# Find type to compare string to that works in Python>=2.5
-try:
-    basestring
-except NameError:
-    basestring = str
-
 _sentinel = object()
 def safehasattr(obj, name):
     return getattr(obj, name, _sentinel) is not _sentinel
@@ -167,7 +161,8 @@ class WatchdogMiddleware(object):
 
     @staticmethod
     def _log_to_email(email_to, email_from, output, req_string):
-        if isinstance(value, basestring):
+        if hasattr(email_to, 'split'):
+            # Looks like a string, but EmailMessage expects a sequence.
             email_to = (email_to,)
         em = EmailMessage('Slow Request Watchdog: %s' %
                           req_string.encode('utf-8'),
