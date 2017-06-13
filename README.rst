@@ -51,6 +51,7 @@ file to tune the watchdog::
     DOGSLOW_TIMER = 25
 
     # When both specified, emails backtraces:
+    # (DOGSLOW_EMAIL_TO can also be a list of addresses)
     DOGSLOW_EMAIL_TO = 'errors@atlassian.com'
     DOGSLOW_EMAIL_FROM = 'no-reply@atlassian.com'
 
