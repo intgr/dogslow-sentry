@@ -47,3 +47,14 @@ def test_middleware_for_slow_request(settings, client, tmpdir):
     logfile, = tmpdir.listdir()
     content = logfile.read()
     assert content.startswith('Undead request intercepted')
+
+
+def test_email_to_single_address(settings, client, mailoutbox):
+    settings.DOGSLOW_TIMER = 0
+    settings.DOGSLOW_EMAIL_FROM = 'sender@example.com'
+    settings.DOGSLOW_EMAIL_TO = 'recipient@example.com'
+
+    resp = client.get('/slow')
+    assert resp.status_code == 200
+
+    assert len(mailoutbox) == 1
