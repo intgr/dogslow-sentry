@@ -165,8 +165,8 @@ class WatchdogMiddleware(object):
             # Looks like a string, but EmailMessage expects a sequence.
             email_to = (email_to,)
         em = EmailMessage('Slow Request Watchdog: %s' %
-                          req_string.encode('utf-8'),
-                          output,
+                          req_string,
+                          output.decode('utf-8', 'replace'),
                           email_from,
                           email_to)
         em.send(fail_silently=True)
