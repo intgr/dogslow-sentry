@@ -83,3 +83,17 @@ def test_email_to_multiple_addresses(settings, client, mailoutbox):
         'recipient2@example.com',
         'recipient3@example.com',
     ]
+
+
+def test_log_to_custom_logger(settings, client, caplog):
+    settings.DOGSLOW_TIMER = 0
+    settings.DOGSLOW_LOGGER = 'dogslow1234'
+
+    resp = client.get('/slow')
+    assert resp.status_code == 200
+
+    assert len(caplog.records) == 1
+    rec = caplog.records[0]
+    assert rec.name == 'dogslow1234'
+    assert rec.levelname == 'WARNING'
+    assert rec.msg.startswith('Slow Request Watchdog:')
