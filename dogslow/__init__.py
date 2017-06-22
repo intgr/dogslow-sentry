@@ -161,11 +161,14 @@ class WatchdogMiddleware(object):
 
     @staticmethod
     def _log_to_email(email_to, email_from, output, req_string):
+        if hasattr(email_to, 'split'):
+            # Looks like a string, but EmailMessage expects a sequence.
+            email_to = (email_to,)
         em = EmailMessage('Slow Request Watchdog: %s' %
-                          req_string.encode('utf-8'),
-                          output,
+                          req_string,
+                          output.decode('utf-8', 'replace'),
                           email_from,
-                          (email_to,))
+                          email_to)
         em.send(fail_silently=True)
 
     @staticmethod
