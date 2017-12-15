@@ -100,10 +100,11 @@ def stack(f, with_locals=False):
 
 class WatchdogMiddleware(object):
 
-    def __init__(self):
+    def __init__(self, get_response=None):
         if not getattr(settings, 'DOGSLOW', True):
             raise MiddlewareNotUsed
         else:
+            self.get_response = get_response
             self.interval = int(getattr(settings, 'DOGSLOW_TIMER', 25))
             self.timer = Timer()
             self.timer.setDaemon(True)
@@ -286,3 +287,11 @@ class WatchdogMiddleware(object):
 
     def process_exception(self, request, exception):
         self._cancel(request)
+        
+    def __call__(self, request):
+        self.process_request(request)
+
+        response = self.get_response(request)
+
+        return self.process_response(request, response)
+

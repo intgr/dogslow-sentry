@@ -35,5 +35,5 @@ setup(
     packages=['dogslow'],
     url='https://bitbucket.org/evzijst/dogslow',
     install_requires=['django'],
-    version='1.0.0',
+    version='1.0.1',
 )
