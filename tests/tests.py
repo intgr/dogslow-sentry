@@ -1,6 +1,5 @@
 import sys
 import datetime
-from collections import namedtuple
 try:
     import _thread as thread
 except ImportError:

@@ -2,6 +2,7 @@ import codecs
 import datetime as dt
 import inspect
 import logging
+import threading
 import os
 import pprint
 import socket
@@ -110,9 +111,12 @@ class WatchdogMiddleware(object):
         else:
             self.get_response = get_response
             self.interval = int(getattr(settings, 'DOGSLOW_TIMER', 25))
-            self.timer = Timer()
-            self.timer.setDaemon(True)
-            self.timer.start()
+            # Django 1.10+ inits middleware when application starts
+            # (it used to do this only when the first request is served).
+            # uWSGI pre-forking prevents the timer from working properly
+            # so we have to postpone the actual thread initialization
+            self.timer = None
+            self.timer_init_lock = threading.Lock()
 
     @staticmethod
     def _log_to_custom_logger(logger_name, frame, output, req_string, request):
@@ -270,12 +274,23 @@ class WatchdogMiddleware(object):
 
     def process_request(self, request):
         if not self._is_exempt(request):
+            self._ensure_timer_initialized()
+
             request.dogslow = self.timer.run_later(
                 WatchdogMiddleware.peek,
                 self.interval,
                 request,
                 thread.get_ident(),
                 dt.datetime.utcnow())
+
+    def _ensure_timer_initialized(self):
+        if not self.timer:
+            with self.timer_init_lock:
+                # Double-checked locking reduces lock acquisition overhead
+                if not self.timer:
+                    self.timer = Timer()
+                    self.timer.setDaemon(True)
+                    self.timer.start()
 
     def _cancel(self, request):
         try:
