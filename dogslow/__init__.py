@@ -16,7 +16,11 @@ import linecache
 from django.conf import settings
 from django.core.exceptions import MiddlewareNotUsed
 from django.core.mail.message import EmailMessage
-from django.core.urlresolvers import resolve, Resolver404
+try:
+    from django.core.urlresolvers import resolve, Resolver404
+except ImportError:
+    # Django 2.0
+    from django.urls import resolve, Resolver404
 
 from dogslow.timer import Timer
 
