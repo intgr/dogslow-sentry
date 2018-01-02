@@ -30,6 +30,13 @@ your Django settings.py file::
         ...
     )
 
+It can also be used as a Django 2.0-style middleware function::
+
+    MIDDLEWARE = (
+        'dogslow.WatchdogMiddleware',
+        ...
+    )
+
 For best results, make it one of the first middlewares that is run.
 
 
