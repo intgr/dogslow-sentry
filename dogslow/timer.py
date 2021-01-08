@@ -3,8 +3,8 @@ import logging
 import threading
 import time
 
-class TimerTask(object):
 
+class TimerTask(object):
     def __init__(self, callable_, *args, **kwargs):
         self._callable = partial(callable_, *args, **kwargs)
         self._finished = False
@@ -16,20 +16,23 @@ class TimerTask(object):
         try:
             self._callable()
         except:
-            logging.exception('TimerTask failed')
+            logging.exception("TimerTask failed")
         finally:
             self._finished = True
 
+
 class Timer(threading.Thread):
-    '''An alternative to threading.Timer. Where threading.Timer spawns a
+    """
+    An alternative to threading.Timer. Where threading.Timer spawns a
     dedicated thread for each job, this class uses a single, long-lived thread
     to process multiple jobs.
 
     Jobs are scheduled with a delay value in seconds.
-    '''
+    """
 
-    def __init__(self, group=None, target=None, name=None, args=(),
-                 kwargs=None, verbose=None):
+    def __init__(
+        self, group=None, target=None, name=None, args=(), kwargs=None, verbose=None
+    ):
         super(Timer, self).__init__(group, target, name, args, kwargs)
 
         self.lock = threading.Condition()
@@ -37,16 +40,19 @@ class Timer(threading.Thread):
         self.die = False
 
     def run_later(self, callable_, timeout, *args, **kwargs):
-        '''Schedules the specified callable for delayed execution.
+        """
+        Schedules the specified callable for delayed execution.
 
         Returns a TimerTask instance that can be used to cancel pending
-        execution.'''
+        execution.
+        """
 
         self.lock.acquire()
         try:
             if self.die:
-                raise RuntimeError('This timer has been shut down and '
-                                   'does not accept new jobs.')
+                raise RuntimeError(
+                    "This timer has been shut down and " "does not accept new jobs."
+                )
 
             job = TimerTask(callable_, *args, **kwargs)
             self._jobs.append((job, time.time() + timeout))
