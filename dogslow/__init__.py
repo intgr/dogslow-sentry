@@ -205,7 +205,7 @@ class WatchdogMiddleware(object):
         # Reconstruct traceback for Sentry
         tb = frames_to_traceback(frame)
         # exc_info is Tuple[Type[BaseException], BaseException, TracebackType]
-        exc_info = type(exc), exc, tb
+        exc_info = (type(exc), exc, tb)
 
         # Copy Sentry Hub from original request thread
         with sentry_sdk.Hub(hub) as hub:
@@ -346,6 +346,9 @@ class WatchdogMiddleware(object):
 
             sentry_hub: Optional[sentry_sdk.Hub] = None
             if getattr(settings, "DOGSLOW_SENTRY", False):
+                # To inherit Sentry context from the original request thread,
+                # we pass along Hub.current. See:
+                # https://forum.sentry.io/t/scopes-and-multithreading-in-python/5180
                 if sentry_sdk:
                     sentry_hub = sentry_sdk.Hub.current
                 else:
