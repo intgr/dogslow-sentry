@@ -8,6 +8,13 @@ import pprint
 import socket
 import sys
 import tempfile
+from types import FrameType, TracebackType
+from typing import Optional
+
+try:
+    import sentry_sdk
+except ImportError:
+    entry_sdk = None
 
 try:
     import _thread as thread
@@ -18,6 +25,7 @@ import linecache
 from django.conf import settings
 from django.core.exceptions import MiddlewareNotUsed
 from django.core.mail.message import EmailMessage
+from django.http import HttpRequest
 
 try:
     from django.core.urlresolvers import resolve, Resolver404
@@ -111,6 +119,20 @@ def stack(f, with_locals=False):
     return res
 
 
+class DogslowLog(BaseException):
+    """Fake exception class for the reporting the stack trace to Sentry."""
+
+
+def frames_to_traceback(frame: Optional[FrameType]) -> Optional[TracebackType]:
+    """Convert stack frames into traceback, which can be handled by Sentry."""
+    tb = None
+    while frame is not None:
+        # XXX TracebackType() constructor requires Python >= 3.7
+        tb = TracebackType(tb, frame, frame.f_lasti, frame.f_lineno)
+        frame = frame.f_back
+    return tb
+
+
 class WatchdogMiddleware(object):
     def __init__(self, get_response=None):
         if not getattr(settings, "DOGSLOW", True):
@@ -177,6 +199,27 @@ class WatchdogMiddleware(object):
         logger.log(log_level, msg, extra=extra)
 
     @staticmethod
+    def _log_to_sentry_sdk(frame: FrameType, request: HttpRequest, hub: sentry_sdk.Hub):
+        # Construct fake exception for attaching the traceback to
+        exc = DogslowLog(f"Slow request: {request.method} {request.path_info}")
+        # Reconstruct traceback for Sentry
+        tb = frames_to_traceback(frame)
+        # exc_info is Tuple[Type[BaseException], BaseException, TracebackType]
+        exc_info = type(exc), exc, tb
+
+        # Copy Sentry Hub from original request thread
+        with sentry_sdk.Hub(hub) as hub:
+            # 'fingerprint' determines the behavior for grouping events.
+            # Stack trace is not useful, as Dogslow will likely hit different
+            # code every time.
+            # {{ transaction }} is URL with placeholders, e.g. "/blog/{post_id}"
+            hub.capture_exception(
+                exc_info,
+                level="warning",
+                fingerprint=["{{ transaction }}", request.method],
+            )
+
+    @staticmethod
     def _log_to_email(email_to, email_from, output, req_string):
         if hasattr(email_to, "split"):
             # Looks like a string, but EmailMessage expects a sequence.
@@ -238,7 +281,7 @@ class WatchdogMiddleware(object):
         return output.encode("utf-8", errors=encoding_error_handler)
 
     @staticmethod
-    def peek(request, thread_id, started):
+    def peek(request, thread_id, started, sentry_hub):
         try:
             frame = sys._current_frames()[thread_id]
 
@@ -275,6 +318,10 @@ class WatchdogMiddleware(object):
                     logger_name, frame, output, req_string, request
                 )
 
+            # This is passed only if DOGSLOW_SENTRY was enabled
+            if sentry_hub is not None:
+                WatchdogMiddleware._log_to_sentry_sdk(frame, request, sentry_hub)
+
         except Exception:
             logging.exception("Dogslow failed")
 
@@ -297,12 +344,20 @@ class WatchdogMiddleware(object):
         if not self._is_exempt(request):
             self._ensure_timer_initialized()
 
+            sentry_hub: Optional[sentry_sdk.Hub] = None
+            if getattr(settings, "DOGSLOW_SENTRY", False):
+                if sentry_sdk:
+                    sentry_hub = sentry_sdk.Hub.current
+                else:
+                    logging.error("Cannot import sentry_sdk")
+
             request.dogslow = self.timer.run_later(
                 WatchdogMiddleware.peek,
                 self.interval,
                 request,
                 thread.get_ident(),
                 dt.datetime.utcnow(),
+                sentry_hub,
             )
 
     def _ensure_timer_initialized(self):

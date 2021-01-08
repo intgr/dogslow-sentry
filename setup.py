@@ -39,5 +39,8 @@ setup(
     packages=["dogslow"],
     url="https://bitbucket.org/evzijst/dogslow",
     install_requires=["django"],
-    version="1.2",
+    extras_require={
+        "sentry": ["sentry_sdk"],
+    },
+    version="2.0",
 )
