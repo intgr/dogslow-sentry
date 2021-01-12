@@ -97,4 +97,4 @@ def test_log_to_custom_logger(settings, client, caplog):
     rec = caplog.records[0]
     assert rec.name == "dogslow1234"
     assert rec.levelname == "WARNING"
-    assert rec.msg.startswith("Slow Request Watchdog:")
+    assert rec.msg.startswith("Slow request: ")

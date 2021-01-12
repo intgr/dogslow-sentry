@@ -148,65 +148,16 @@ class WatchdogMiddleware(object):
             self.timer_init_lock = threading.Lock()
 
     @staticmethod
-    def _log_to_custom_logger(logger_name, frame, output, req_string, request):
+    def _log_to_custom_logger(logger_name, exc_info, req_string):
         log_level = getattr(settings, "DOGSLOW_LOG_LEVEL", "WARNING")
-        log_to_sentry = getattr(settings, "DOGSLOW_LOG_TO_SENTRY", False)
         log_level = logging.getLevelName(log_level)
         logger = logging.getLogger(logger_name)
 
-        # we're passing the Django request object along
-        # with the log call in case we're being used with
-        # Sentry:
-        extra = {"request": request}
-
-        # if this is not going to Sentry,
-        # then we'll use the original msg
-        if not log_to_sentry:
-            msg = "Slow Request Watchdog: %s, %s - %s" % (
-                resolve(request.META.get("PATH_INFO")).url_name,
-                req_string.encode("utf-8"),
-                output,
-            )
-
-        # if it is going to Sentry,
-        # we instead want to format differently and send more in extra
-        else:
-            msg = "Slow Request Watchdog: %s" % request.META.get("PATH_INFO")
-
-            module = inspect.getmodule(frame.f_code)
-
-            # This is a bizarre construct, `module` in `function`, but
-            # this is how all stack traces are formatted.
-            extra["culprit"] = "%s in %s" % (
-                getattr(module, "__name__", "(unknown module)"),
-                frame.f_code.co_name,
-            )
-
-            # We've got to simplify the stack, because raven only accepts
-            # a list of 2-tuples of (frame, lineno).
-            # This is a list comprehension split over a few lines.
-            extra["stack"] = [
-                (frame, lineno)
-                for frame, filename, lineno, function, code_context, index in inspect.getouterframes(
-                    frame
-                )
-            ]
-
-            # Lastly, we have to reverse the order of the frames
-            # because getouterframes() gives it to you backwards.
-            extra["stack"].reverse()
-
-        logger.log(log_level, msg, extra=extra)
+        msg = "Slow request: %s" % (req_string,)
+        logger.log(log_level, msg, exc_info=exc_info)
 
     @staticmethod
-    def _log_to_sentry_sdk(frame: FrameType, request: HttpRequest, hub: sentry_sdk.Hub):
-        # Construct fake exception for attaching the traceback to
-        exc = DogslowLog(f"Slow request: {request.method} {request.path_info}")
-        # Reconstruct traceback for Sentry
-        tb = frames_to_traceback(frame)
-        # exc_info is Tuple[Type[BaseException], BaseException, TracebackType]
-        exc_info = (type(exc), exc, tb)
-
+    def _log_to_sentry_sdk(exc_info, request: HttpRequest, hub: sentry_sdk.Hub):
         # Copy Sentry Hub from original request thread
         with sentry_sdk.Hub(hub) as hub:
             # 'fingerprint' determines the behavior for grouping events.
@@ -311,16 +262,24 @@ class WatchdogMiddleware(object):
                 WatchdogMiddleware._log_to_email(
                     email_to, email_from, output, req_string
                 )
+
+            # Construct fake exception for attaching the traceback to
+            exc = DogslowLog(f"Slow request: {request.method} {request.path_info}")
+            # Reconstruct traceback for Sentry
+            tb = frames_to_traceback(frame)
+            # exc_info is Tuple[Type[BaseException], BaseException, TracebackType]
+            exc_info = (type(exc), exc, tb)
+
             # and a custom logger:
             logger_name = getattr(settings, "DOGSLOW_LOGGER", None)
             if logger_name is not None:
                 WatchdogMiddleware._log_to_custom_logger(
-                    logger_name, frame, output, req_string, request
+                    logger_name, exc_info, req_string
                 )
 
             # This is passed only if DOGSLOW_SENTRY was enabled
             if sentry_hub is not None:
-                WatchdogMiddleware._log_to_sentry_sdk(frame, request, sentry_hub)
+                WatchdogMiddleware._log_to_sentry_sdk(exc_info, request, sentry_hub)
 
         except Exception:
             logging.exception("Dogslow failed")
