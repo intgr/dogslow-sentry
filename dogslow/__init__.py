@@ -123,12 +123,20 @@ class DogslowLog(BaseException):
     """Fake exception class for the reporting the stack trace to Sentry."""
 
 
-def frames_to_traceback(frame: Optional[FrameType]) -> Optional[TracebackType]:
+def frames_to_traceback(
+    frame: Optional[FrameType], until_file: str, until_func: str
+) -> Optional[TracebackType]:
     """Convert stack frames into traceback, which can be handled by Sentry."""
     tb = None
     while frame is not None:
+        # No point to trace further than the middleware itself
         # XXX TracebackType() constructor requires Python >= 3.7
         tb = TracebackType(tb, frame, frame.f_lasti, frame.f_lineno)
+        if (
+            frame.f_code.co_filename == until_file
+            and frame.f_code.co_name == until_func
+        ):
+            break
         frame = frame.f_back
     return tb
 
@@ -266,7 +274,7 @@ class WatchdogMiddleware(object):
             # Construct fake exception for attaching the traceback to
             exc = DogslowLog(f"Slow request: {request.method} {request.path_info}")
             # Reconstruct traceback for Sentry
-            tb = frames_to_traceback(frame)
+            tb = frames_to_traceback(frame, __file__, "__call__")
             # exc_info is Tuple[Type[BaseException], BaseException, TracebackType]
             exc_info = (type(exc), exc, tb)
 
