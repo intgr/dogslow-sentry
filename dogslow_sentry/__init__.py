@@ -33,7 +33,7 @@ except ImportError:
     # Django 2.0
     from django.urls import resolve, Resolver404
 
-from dogslow.timer import Timer
+from dogslow_sentry.timer import Timer
 
 # The errors= parameter of str.encode() in _compose_output:
 #

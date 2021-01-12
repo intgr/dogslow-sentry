@@ -7,11 +7,11 @@ def pytest_configure():
         ROOT_URLCONF="tests.urls",
         # Django < 2.0
         MIDDLEWARE_CLASSES=[
-            "dogslow.WatchdogMiddleware",
+            "dogslow_sentry.WatchdogMiddleware",
         ],
         # Django >= 2.0
         MIDDLEWARE=[
-            "dogslow.WatchdogMiddleware",
+            "dogslow_sentry.WatchdogMiddleware",
         ],
         TEMPLATES=[
             {

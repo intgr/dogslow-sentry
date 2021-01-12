@@ -18,7 +18,7 @@ htmlcov
 build
 dist
 MANIFEST
-dogslow.egg-info
+*.egg-info
 .DS_Store
 cscope.*
 .idea/

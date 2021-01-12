@@ -3,7 +3,7 @@
 
 import os
 import sys
-from distutils.core import setup
+from setuptools import setup
 
 
 def long_description():
@@ -12,8 +12,8 @@ def long_description():
 
 
 setup(
-    author="Erik van Zijst",
-    author_email="erik.van.zijst@gmail.com",
+    author="Marti Raudsepp",
+    author_email="marti@juffo.org",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Framework :: Django",
@@ -31,12 +31,12 @@ setup(
         "Topic :: Software Development :: Debuggers",
         "Topic :: Utilities",
     ],
-    description="A Django middleware that logs tracebacks of slow requests.",
-    keywords="django debug watchdog middleware traceback",
+    description="A Django middleware that logs tracebacks of slow requests to Sentry.",
+    keywords="django debug watchdog middleware traceback sentry",
     license="GNU LGPL",
     long_description=long_description(),
-    name="dogslow",
-    packages=["dogslow"],
+    name="dogslow-sentry",
+    packages=["dogslow_sentry"],
     url="https://bitbucket.org/evzijst/dogslow",
     install_requires=["django"],
     extras_require={

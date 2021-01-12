@@ -1,6 +1,6 @@
-=======================================
-Dogslow -- Django Slow Request Watchdog
-=======================================
+==============================================
+Dogslow-Sentry -- Django Slow Request Watchdog
+==============================================
 
 
 Overview
@@ -18,22 +18,14 @@ operational problems.
 Installation
 ------------
 
-Install dogslow::
+Install dogslow-sentry::
 
-    $ pip install dogslow
+    $ pip install dogslow-sentry
 
-Then add ``dogslow.WatchdogMiddleware`` to your list of middleware classes in
-your Django settings.py file::
-
-    MIDDLEWARE_CLASSES = (
-        'dogslow.WatchdogMiddleware',
-        ...
-    )
-
-It can also be used as a Django 2.0-style middleware function::
+Then add ``dogslow_sentry.WatchdogMiddleware`` to your Django settings file::
 
     MIDDLEWARE = (
-        'dogslow.WatchdogMiddleware',
+        'dogslow_sentry.WatchdogMiddleware',
         ...
     )
 

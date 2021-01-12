@@ -34,13 +34,13 @@ coverage: tests
 # E301: expected blank line
 # E302: two new lines between functions/etc.
 pep8:
-	pep8 --ignore=E261,E301,E302 --repeat dogslow setup.py
+	pep8 --ignore=E261,E301,E302 --repeat dogslow_sentry setup.py
 
 pyflakes:
-	pyflakes dogslow setup.py
+	pyflakes dogslow_sentry setup.py
 
 pylint:
-	pylint --rcfile=.pylintrc dogslow setup.py
+	pylint --rcfile=.pylintrc dogslow_sentry setup.py
 
 .PHONY: all build clean install dist tests coverage pep8 pyflakes pylint \
 	upload

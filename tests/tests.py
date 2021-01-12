@@ -6,13 +6,13 @@ try:
 except ImportError:
     import thread
 
-import dogslow
+import dogslow_sentry
 
 
 def test_stack():
     my_variable = "aaaabbbbccccdddd"
     frame = sys._current_frames()[thread.get_ident()]
-    stack_rendered = dogslow.stack(frame, with_locals=True)
+    stack_rendered = dogslow_sentry.stack(frame, with_locals=True)
     assert my_variable in stack_rendered
 
 
@@ -20,7 +20,7 @@ def test_surrogates(settings):
     frame = sys._current_frames()[thread.get_ident()]
     settings.DOGSLOW_STACK_VARS = False
     # If the bug is present, this will cause a UnicodeEncodeError:
-    stack_rendered = dogslow.WatchdogMiddleware._compose_output(
+    stack_rendered = dogslow_sentry.WatchdogMiddleware._compose_output(
         frame,
         req_string=u"GET \udcee hahaha",
         started=datetime.datetime.now(),
