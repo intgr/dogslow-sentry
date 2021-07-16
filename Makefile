@@ -1,4 +1,4 @@
-PYTHON=python
+PYTHON=python3
 
 ifdef PREFIX
 PREFIX_ARG=--prefix=$(PREFIX)

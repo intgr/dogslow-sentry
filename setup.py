@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Installs dogslow.
 
 import os
@@ -14,6 +14,7 @@ def long_description():
 setup(
     author="Marti Raudsepp",
     author_email="marti@juffo.org",
+    python_requires=">=3.7",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Framework :: Django",
@@ -24,10 +25,9 @@ setup(
         ),
         "Natural Language :: English",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Topic :: Software Development :: Debuggers",
         "Topic :: Utilities",
     ],
@@ -38,9 +38,6 @@ setup(
     name="dogslow-sentry",
     packages=["dogslow_sentry"],
     url="https://bitbucket.org/evzijst/dogslow",
-    install_requires=["django"],
-    extras_require={
-        "sentry": ["sentry_sdk"],
-    },
+    install_requires=["django>=2.2", "sentry-sdk>=1.0"],
     version="2.0",
 )

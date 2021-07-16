@@ -1,4 +1,3 @@
-import codecs
 import datetime as dt
 import inspect
 import logging
@@ -10,42 +9,17 @@ import sys
 import tempfile
 from types import FrameType, TracebackType
 from typing import Optional
-
-try:
-    import sentry_sdk
-except ImportError:
-    entry_sdk = None
-
-try:
-    import _thread as thread
-except ImportError:
-    import thread
+import _thread as thread
 import linecache
 
 from django.conf import settings
 from django.core.exceptions import MiddlewareNotUsed
 from django.core.mail.message import EmailMessage
 from django.http import HttpRequest
-
-try:
-    from django.core.urlresolvers import resolve, Resolver404
-except ImportError:
-    # Django 2.0
-    from django.urls import resolve, Resolver404
+from django.urls import resolve, Resolver404
+import sentry_sdk
 
 from dogslow_sentry.timer import Timer
-
-# The errors= parameter of str.encode() in _compose_output:
-#
-# 'surrogatepass' was added in 3.1.
-encoding_error_handler = "surrogatepass"
-try:
-    codecs.lookup_error(encoding_error_handler)
-except LookupError:
-    # In python 2.7, surrogates don't seem to trigger the error handler.
-    # I'm going with 'replace' for consistency with the `stack` function,
-    # although I'm not clear on whether this will ever get triggered.
-    encoding_error_handler = "replace"
 
 _sentinel = object()
 
@@ -57,7 +31,7 @@ def safehasattr(obj, name):
 class SafePrettyPrinter(pprint.PrettyPrinter, object):
     def format(self, obj, context, maxlevels, level):
         try:
-            return super(SafePrettyPrinter, self).format(obj, context, maxlevels, level)
+            return super().format(obj, context, maxlevels, level)
         except Exception:
             return object.__repr__(obj)[:-1] + " (bad repr)>", True, False
 
@@ -130,7 +104,7 @@ def frames_to_traceback(
     tb = None
     while frame is not None:
         # No point to trace further than the middleware itself
-        # XXX TracebackType() constructor requires Python >= 3.7
+        # Note: TracebackType() constructor requires Python >= 3.7
         tb = TracebackType(tb, frame, frame.f_lasti, frame.f_lineno)
         if (
             frame.f_code.co_filename == until_file
@@ -148,7 +122,7 @@ class WatchdogMiddleware(object):
         else:
             self.get_response = get_response
             self.interval = int(getattr(settings, "DOGSLOW_TIMER", 25))
-            # Django 1.10+ inits middleware when application starts
+            # Django inits middleware when application starts
             # (it used to do this only when the first request is served).
             # uWSGI pre-forking prevents the timer from working properly
             # so we have to postpone the actual thread initialization
@@ -237,7 +211,7 @@ class WatchdogMiddleware(object):
             output += "Full backtrace with local variables:"
             output += "\n\n"
             output += stack(frame, with_locals=True)
-        return output.encode("utf-8", errors=encoding_error_handler)
+        return output.encode("utf-8", errors="surrogatepass")
 
     @staticmethod
     def peek(request, thread_id, started, sentry_hub):
@@ -316,10 +290,7 @@ class WatchdogMiddleware(object):
                 # To inherit Sentry context from the original request thread,
                 # we pass along Hub.current. See:
                 # https://forum.sentry.io/t/scopes-and-multithreading-in-python/5180
-                if sentry_sdk:
-                    sentry_hub = sentry_sdk.Hub.current
-                else:
-                    logging.error("Cannot import sentry_sdk")
+                sentry_hub = sentry_sdk.Hub.current
 
             request.dogslow = self.timer.run_later(
                 WatchdogMiddleware.peek,

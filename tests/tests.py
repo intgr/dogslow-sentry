@@ -1,10 +1,6 @@
 import sys
 import datetime
-
-try:
-    import _thread as thread
-except ImportError:
-    import thread
+import _thread as thread
 
 import dogslow_sentry
 

@@ -1,7 +1,7 @@
 import time
 
 from django.http import HttpResponse
-from django.conf.urls import url
+from django.urls import re_path
 
 
 def okay_view(request):
@@ -14,6 +14,6 @@ def slow_view(request):
 
 
 urlpatterns = [
-    url(r"^$", okay_view),
-    url(r"^slow$", slow_view),
+    re_path(r"^$", okay_view),
+    re_path(r"^slow$", slow_view),
 ]
