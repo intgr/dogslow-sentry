@@ -6,11 +6,15 @@ Dogslow-Sentry -- Django Slow Request Watchdog
 Overview
 --------
 
-Dogslow is a Django watchdog middleware class that logs tracebacks of slow
+Dogslow is a Django watchdog middleware that logs tracebacks of slow
 requests.
 
 It started as an `internal project inside Bitbucket`_ to help trace
 operational problems.
+
+In 2021, the dogslow-sentry fork was created to add Sentry-specific information
+to reports, like full stack trace, request information, fingerprint for issue
+grouping, breadcrumbs, etc.
 
 .. _internal project inside Bitbucket: http://blog.bitbucket.org/2011/05/17/tracking-slow-requests-with-dogslow/
 
@@ -24,10 +28,10 @@ Install dogslow-sentry::
 
 Then add ``dogslow_sentry.WatchdogMiddleware`` to your Django settings file::
 
-    MIDDLEWARE = (
+    MIDDLEWARE = [
         'dogslow_sentry.WatchdogMiddleware',
         ...
-    )
+    ]
 
 For best results, make it one of the first middlewares that is run.
 
@@ -35,37 +39,29 @@ For best results, make it one of the first middlewares that is run.
 Configuration
 -------------
 
-You can use the following configuration properties in your ``settings.py``
+Naturally, dogslow-sentry expects a `working Sentry configuration for Django`_.
+
+.. _working Sentry configuration for Django: https://docs.sentry.io/platforms/python/guides/django/
+
+You can use the following configuration in your ``settings.py``
 file to tune the watchdog::
 
     # Watchdog is enabled by default, to temporarily disable, set to False:
     DOGSLOW = True
 
-    # By default, Watchdog will create log files with the backtraces.
-    # You can also set the location of where it stores them:
-    DOGSLOW_LOG_TO_FILE = True
-    DOGSLOW_OUTPUT = '/tmp'
-
     # Log requests taking longer than 25 seconds:
     DOGSLOW_TIMER = 25
 
-    # When both specified, emails backtraces:
-    # (DOGSLOW_EMAIL_TO can also be a list of addresses)
-    DOGSLOW_EMAIL_TO = 'errors@atlassian.com'
-    DOGSLOW_EMAIL_FROM = 'no-reply@atlassian.com'
+    # Enable logging to Sentry
+    DOGSLOW_SENTRY = True
 
-    # Also log to this logger (defaults to none):
-    DOGSLOW_LOGGER = 'syslog_logger'
+    # Also log slow request tracebacks to Python logger
+    DOGSLOW_LOGGER = 'dogslow_sentry'
     DOGSLOW_LOG_LEVEL = 'WARNING'
 
     # Tuple of url pattern names that should not be monitored:
     # (defaults to none -- everything monitored)
-    # Note: this option is not compatible with Django < 1.3
     DOGSLOW_IGNORE_URLS = ('some_view', 'other_view')
-
-    # Print (potentially huge!) local stack variables (off by default, use
-    # True for more detailed, but less manageable reports)
-    DOGSLOW_STACK_VARS = True
 
 
 Usage
@@ -76,99 +72,9 @@ request does not return within that time, the watchdog activates and takes a
 peek at the request thread's stack and writes the backtrace (including all
 local stack variables -- Django style) to a log file.
 
-Each slow request is logged in a separate file that looks like this::
-
-    Undead request intercepted at: 16-05-2011 02:10:12 UTC
-
-    GET http://localhost:8000/?delay=2
-    Thread ID:  140539485042432
-    Process ID: 18010
-    Started:    16-05-2011 02:10:10 UTC
-
-      File "/home/erik/work/virtualenv/bit/lib/python2.7/site-packages/django/core/management/commands/runserver.py", line 107, in inner_run
-        run(self.addr, int(self.port), handler, ipv6=self.use_ipv6)
-      File "/home/erik/work/virtualenv/bit/lib/python2.7/site-packages/django/core/servers/basehttp.py", line 696, in run
-        httpd.serve_forever()
-      File "/usr/lib/python2.7/SocketServer.py", line 227, in serve_forever
-        self._handle_request_noblock()
-      File "/usr/lib/python2.7/SocketServer.py", line 284, in _handle_request_noblock
-        self.process_request(request, client_address)
-      File "/usr/lib/python2.7/SocketServer.py", line 310, in process_request
-        self.finish_request(request, client_address)
-      File "/usr/lib/python2.7/SocketServer.py", line 323, in finish_request
-        self.RequestHandlerClass(request, client_address, self)
-      File "/home/erik/work/virtualenv/bit/lib/python2.7/site-packages/django/core/servers/basehttp.py", line 570, in __init__
-        BaseHTTPRequestHandler.__init__(self, *args, **kwargs)
-      File "/usr/lib/python2.7/SocketServer.py", line 639, in __init__
-        self.handle()
-      File "/home/erik/work/virtualenv/bit/lib/python2.7/site-packages/django/core/servers/basehttp.py", line 615, in handle
-        handler.run(self.server.get_app())
-      File "/home/erik/work/virtualenv/bit/lib/python2.7/site-packages/django/core/servers/basehttp.py", line 283, in run
-        self.result = application(self.environ, self.start_response)
-      File "/home/erik/work/virtualenv/bit/lib/python2.7/site-packages/django/contrib/staticfiles/handlers.py", line 68, in __call__
-        return self.application(environ, start_response)
-      File "/home/erik/work/virtualenv/bit/lib/python2.7/site-packages/django/core/handlers/wsgi.py", line 273, in __call__
-        response = self.get_response(request)
-      File "/home/erik/work/virtualenv/bit/lib/python2.7/site-packages/django/core/handlers/base.py", line 111, in get_response
-        response = callback(request, *callback_args, **callback_kwargs)
-      File "/home/erik/work/middleware/middleware/sleep/views.py", line 6, in sleep
-        time.sleep(float(request.GET.get('delay', 1)))
-
-    Full backtrace with local variables:
-
-      File "/home/erik/work/virtualenv/bit/lib/python2.7/site-packages/django/core/management/commands/runserver.py", line 107, in inner_run
-        run(self.addr, int(self.port), handler, ipv6=self.use_ipv6)
-
-      ...loads more...
-
-The example above shows that the request thread was blocked in
-``time.sleep()`` at the time ``dogslow`` took its snapshot.
-
-Requests that return before ``dogslow``'s timeout expires do not get logged.
-
 Note that ``dogslow`` only takes a peek at the thread's stack. It does not
 interrupt the request, or influence it in any other way. Using ``dogslow`` is
 therefore safe to use in production.
-
-
-Sentry Integration
-------------------
-
-Dogslow natively integrates with Sentry. You can set it up by configuring
-Dogslow to use ``DOGSLOW_LOGGER`` and ``DOGSLOW_LOG_TO_SENTRY`` and by
-`configuring Raven`_ to collect Dogslow's reports. ::
-
-    DOGSLOW_LOGGER = 'dogslow' # can be anything, but must match `logger` below
-    DOGSLOW_LOG_TO_SENTRY = True
-    
-    DOGSLOW_LOG_LEVEL = 'WARNING' # optional, defaults to 'WARNING'
-    
-    # Add a new sentry handler to handle WARNINGs. It's not recommended to
-    # modify the existing sentry handler, as you'll probably start seeing
-    # other warnings unnecessarily sent to Sentry.
-    LOGGING = {
-        ...
-        'handlers': {
-            ...
-            'dogslow': {
-                'level': 'WARNING',
-                'class': 'raven.contrib.django.handlers.SentryHandler',
-            }
-            ...
-        }
-        'loggers': {
-            ...
-            'dogslow': {
-                'level': 'WARNING',
-                'handlers': ['dogslow'], # or whatever you named your handler
-            }
-            ...
-        }
-        ...
-    }
-    
-
-.. _configuring Raven: http://raven.readthedocs.org/en/latest/config/django.html#integration-with-logging
 
 
 Caveats
