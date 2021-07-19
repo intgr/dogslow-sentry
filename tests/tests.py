@@ -2,6 +2,8 @@ import sys
 import datetime
 import _thread as thread
 
+import sentry_sdk
+
 import dogslow_sentry
 
 
@@ -94,3 +96,26 @@ def test_log_to_custom_logger(settings, client, caplog):
     assert rec.name == "dogslow1234"
     assert rec.levelname == "WARNING"
     assert rec.msg.startswith("Slow request: ")
+
+
+def test_log_to_sentry(settings, client, capture_events):
+    settings.DOGSLOW_TIMER = 0.2
+    settings.DOGSLOW_SENTRY = True
+
+    sentry_sdk.init()
+    events = capture_events()
+
+    resp = client.get("/slow")
+    assert resp.status_code == 200
+    assert len(events) == 1
+
+    (event,) = events
+    assert event["exception"]
+    assert len(event["exception"]["values"]) == 1
+
+    (exception,) = event["exception"]["values"]
+    assert exception["type"] == "DogslowLog"
+    assert exception["value"] == "Slow request: GET /slow"
+    # XXX Is checking the stack trace too racy?
+    assert exception["stacktrace"]["frames"][-1]["module"] == "tests.urls"
+    assert exception["stacktrace"]["frames"][-1]["function"] == "slow_view"
