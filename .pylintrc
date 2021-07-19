@@ -38,7 +38,7 @@ defining-attr-methods=__init__,__new__
 deprecated-modules=regsub,TERMIOS,Bastion,rexec
 
 [FORMAT]
-max-line-length=79
+max-line-length=88
 max-module-lines=5000
 
 [MISCELLANEOUS]

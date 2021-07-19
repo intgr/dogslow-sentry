@@ -35,9 +35,10 @@ setup(
     keywords="django debug watchdog middleware traceback sentry",
     license="GNU LGPL",
     long_description=long_description(),
+    long_description_content_type="text/x-rst",
     name="dogslow-sentry",
     packages=["dogslow_sentry"],
-    url="https://bitbucket.org/evzijst/dogslow",
+    url="https://github.com/intgr/dogslow-sentry",
     install_requires=["django>=2.2", "sentry-sdk>=1.0"],
-    version="2.0",
+    version="2.0.0b1",
 )

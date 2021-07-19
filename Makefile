@@ -19,22 +19,19 @@ install: build
 	$(PYTHON) setup.py install $(PREFIX_ARG)
 
 dist:
-	TAR_OPTIONS="--owner=root --group=root --mode=u+w,go-w,a+rX-s" \
-	$(PYTHON) setup.py -q sdist
+	$(PYTHON) -m build
+	$(PYTHON) -m twine check dist/*
 
 upload: dist
-	$(PYTHON) setup.py upload
+	$(PYTHON) -m twine upload dist/*
 
 tests:
 	@echo "There aren't any tests yet!" >& 2 && exit 1
 
 coverage: tests
 
-# E261: two spaces before inline comment
-# E301: expected blank line
-# E302: two new lines between functions/etc.
-pep8:
-	pep8 --ignore=E261,E301,E302 --repeat dogslow_sentry setup.py
+black:
+	black dogslow_sentry tests setup.py
 
 pyflakes:
 	pyflakes dogslow_sentry setup.py
