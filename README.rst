@@ -84,6 +84,27 @@ interrupt the request, or influence it in any other way. Using ``dogslow`` is
 therefore safe to use in production.
 
 
+Changelog
+---------
+
+2.0.0 (2021-12-13)
+
+* Configured GitHub Actions for CI.
+* Enabled testing with Python 3.10 and Django 4.0.
+* Fixed deprecation warning when using Python 3.10.
+
+2.0.0b1 (2021-07-19)
+
+* Initial pre-release of ``dogslow-sentry`` fork.
+* Improved Sentry integration.
+* Dropped Python 2.7 support, now requires Python 3.7+, Django 2.2+.
+* Many minor tweaks. Reformatted code with Black.
+
+1.2 (2018-01-04)
+
+* Last release of upstream ``dogslow`` package.
+
+
 Caveats
 -------
 
