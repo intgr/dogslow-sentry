@@ -28,6 +28,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Topic :: Software Development :: Debuggers",
         "Topic :: Utilities",
     ],
@@ -40,5 +41,5 @@ setup(
     packages=["dogslow_sentry"],
     url="https://github.com/intgr/dogslow-sentry",
     install_requires=["django>=2.2", "sentry-sdk>=1.0"],
-    version="2.0.0b1",
+    version="2.0.0",
 )
