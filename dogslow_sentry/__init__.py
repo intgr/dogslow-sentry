@@ -307,7 +307,7 @@ class WatchdogMiddleware(object):
                 # Double-checked locking reduces lock acquisition overhead
                 if not self.timer:
                     self.timer = Timer()
-                    self.timer.setDaemon(True)
+                    self.timer.daemon = True
                     self.timer.start()
 
     def _cancel(self, request):
