@@ -1,9 +1,9 @@
 name: Python package
 
 on:
-  - push
+  push:
     branches: [master]
-  - pull_request
+  pull_request:
   schedule:
     # 13:22 UTC on Tuesdays
     - cron: "22 13 * * TUE"
