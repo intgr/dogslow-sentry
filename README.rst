@@ -7,6 +7,9 @@ Dogslow-Sentry -- Django Slow Request Watchdog
 .. |PyPI version badge| image:: https://badge.fury.io/py/dogslow-sentry.svg
    :target: https://pypi.org/project/dogslow-sentry/
 
+.. |Tests status| image:: https://github.com/intgr/dogslow-sentry/workflows/Tests/badge.svg?branch=master
+   :target: https://github.com/intgr/dogslow-sentry/actions?query=workflow:Tests
+
 Overview
 --------
 
