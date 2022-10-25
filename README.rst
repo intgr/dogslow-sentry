@@ -87,6 +87,10 @@ therefore safe to use in production.
 Changelog
 ---------
 
+Unreleased
+
+* Enabled CI testing with Python 3.11 and Django 4.1.
+
 2.0.0 (2021-12-13)
 
 * Configured GitHub Actions for CI.
