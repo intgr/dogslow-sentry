@@ -89,6 +89,7 @@ Changelog
 
 Unreleased
 
+* Use ISO 8601-like YYYY-MM-DD date format for email/file logging.
 * Fixed deprecation warnings on Python 3.12 (utcnow function).
 * Enabled CI testing with Python 3.11, 3.12 and Django 5.0, 4.2, 4.1.
 
