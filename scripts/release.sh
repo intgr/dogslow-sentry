@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -ex
 
-if [[ -n $(git status -s) ]]; then
+if [[ -n "$(git status -s)" ]]; then
   echo "git working tree is not clean, aborting"
   exit 1
 fi
