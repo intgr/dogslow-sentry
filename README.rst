@@ -89,7 +89,7 @@ Changelog
 
 Unreleased
 
-* Enabled CI testing with Python 3.11 and Django 4.1.
+* Enabled CI testing with Python 3.11, 3.12 and Django 5.0, 4.2, 4.1.
 
 2.0.0 (2021-12-13)
 
