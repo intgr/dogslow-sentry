@@ -1,4 +1,4 @@
-import datetime as dt
+from datetime import timezone, datetime
 import inspect
 import logging
 import threading
@@ -26,6 +26,10 @@ _sentinel = object()
 
 def safehasattr(obj, name):
     return getattr(obj, name, _sentinel) is not _sentinel
+
+
+def utcnow():
+    return datetime.now(tz=timezone.utc)
 
 
 class SafePrettyPrinter(pprint.PrettyPrinter, object):
@@ -187,12 +191,12 @@ class WatchdogMiddleware(object):
             "Process ID: %d\n"
             "Started:    %s\n\n"
             % (
-                dt.datetime.utcnow().strftime("%d-%m-%Y %H:%M:%S UTC"),
+                utcnow().strftime("%d-%m-%Y %H:%M:%S %Z"),
                 req_string,
                 socket.gethostname(),
                 thread_id,
                 os.getpid(),
-                started.strftime("%d-%m-%Y %H:%M:%S UTC"),
+                started.strftime("%d-%m-%Y %H:%M:%S %Z"),
             )
         )
         output += stack(frame, with_locals=False)
@@ -297,7 +301,7 @@ class WatchdogMiddleware(object):
                 self.interval,
                 request,
                 thread.get_ident(),
-                dt.datetime.utcnow(),
+                utcnow(),
                 sentry_hub,
             )
 
