@@ -191,12 +191,12 @@ class WatchdogMiddleware(object):
             "Process ID: %d\n"
             "Started:    %s\n\n"
             % (
-                utcnow().strftime("%d-%m-%Y %H:%M:%S %Z"),
+                utcnow().strftime("%Y-%m-%d %H:%M:%S %Z"),
                 req_string,
                 socket.gethostname(),
                 thread_id,
                 os.getpid(),
-                started.strftime("%d-%m-%Y %H:%M:%S %Z"),
+                started.strftime("%Y-%m-%d %H:%M:%S %Z"),
             )
         )
         output += stack(frame, with_locals=False)
