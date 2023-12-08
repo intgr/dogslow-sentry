@@ -87,7 +87,7 @@ therefore safe to use in production.
 Changelog
 ---------
 
-Unreleased
+2.0.1 (2023-12-08)
 
 * Use ISO 8601-like YYYY-MM-DD date format for email/file logging.
 * Fixed deprecation warnings on Python 3.12 (utcnow function).

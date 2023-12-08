@@ -16,8 +16,16 @@ setup(
     author_email="marti@juffo.org",
     python_requires=">=3.7",
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 6 - Mature",
         "Framework :: Django",
+        "Framework :: Django :: 2.2",
+        "Framework :: Django :: 3.0",
+        "Framework :: Django :: 3.2",
+        "Framework :: Django :: 3.2",
+        "Framework :: Django :: 4.0",
+        "Framework :: Django :: 4.1",
+        "Framework :: Django :: 4.2",
+        "Framework :: Django :: 5.0",
         "Intended Audience :: Developers",
         (
             "License :: OSI Approved :: "
@@ -42,6 +50,9 @@ setup(
     name="dogslow-sentry",
     packages=["dogslow_sentry"],
     url="https://github.com/intgr/dogslow-sentry",
+    project_urls={
+        "Release notes": "https://github.com/intgr/dogslow-sentry/blob/main/README.rst#changelog",
+    },
     install_requires=["django>=2.2", "sentry-sdk>=1.0"],
-    version="2.0.0",
+    version="2.0.1",
 )
