@@ -14,7 +14,7 @@ def long_description():
 setup(
     author="Marti Raudsepp",
     author_email="marti@juffo.org",
-    python_requires=">=3.7",
+    python_requires=">=3.8",
     classifiers=[
         "Development Status :: 6 - Mature",
         "Framework :: Django",
@@ -33,7 +33,6 @@ setup(
         ),
         "Natural Language :: English",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
