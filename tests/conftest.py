@@ -30,13 +30,20 @@ def capture_events(monkeypatch):
 
     def inner():
         events = []
-        old_capture_event = sentry_sdk.Hub.capture_event
+
+        if hasattr(sentry_sdk.Scope, "capture_event"):
+            # Sentry versions >=1.40
+            patch_class = sentry_sdk.Scope
+        else:
+            patch_class = sentry_sdk.Hub
+
+        old_capture_event = patch_class.capture_event
 
         def capture_event(self, event, hint=None, *args, **kwargs):
             events.append(event)
             return old_capture_event(self, event, hint=hint, *args, **kwargs)
 
-        monkeypatch.setattr(sentry_sdk.Hub, "capture_event", capture_event)
+        monkeypatch.setattr(patch_class, "capture_event", capture_event)
         return events
 
     return inner
