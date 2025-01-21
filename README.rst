@@ -87,9 +87,10 @@ therefore safe to use in production.
 Changelog
 ---------
 
-Unreleased
+Unreleased (2025-01-21)
 
 * Dropped Python 3.7 support, now requires Python 3.8+.
+* Enabled CI testing with Python 3.13 and Django 5.1.
 
 2.0.1 (2023-12-08)
 
