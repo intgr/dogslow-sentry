@@ -14,7 +14,7 @@ Overview
 --------
 
 Dogslow is a Django watchdog middleware that logs tracebacks of slow
-requests. Dogslow-sentry requires Python 3.7+, Django 2.2+.
+requests. Dogslow-sentry requires Python 3.8+, Django 2.2+.
 
 It started as an `internal project inside Bitbucket`_ to help trace
 operational problems.
@@ -86,6 +86,10 @@ therefore safe to use in production.
 
 Changelog
 ---------
+
+Unreleased
+
+* Dropped Python 3.7 support, now requires Python 3.8+.
 
 2.0.1 (2023-12-08)
 
