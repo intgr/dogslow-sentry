@@ -108,7 +108,6 @@ def frames_to_traceback(
     tb = None
     while frame is not None:
         # No point to trace further than the middleware itself
-        # Note: TracebackType() constructor requires Python >= 3.7
         tb = TracebackType(tb, frame, frame.f_lasti, frame.f_lineno)
         if (
             frame.f_code.co_filename == until_file
