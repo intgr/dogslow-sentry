@@ -87,10 +87,11 @@ therefore safe to use in production.
 Changelog
 ---------
 
-Unreleased (2025-10-31)
+Unreleased (2025-10-16)
 
 * Dropped Python 3.7 support, now requires Python 3.8+.
 * Enabled CI testing with Python 3.13, 3.14 and Django 5.1, 5.2.
+* Migrated to pyproject.toml and uv package manager.
 
 2.0.1 (2023-12-08)
 
