@@ -1,0 +1,60 @@
+[project]
+name = "dogslow-sentry"
+version = "2.0.1"
+description = "A Django middleware that logs tracebacks of slow requests to Sentry."
+keywords = ["django debug watchdog middleware traceback sentry"]
+readme = "README.rst"
+authors = [
+    {name = "Marti Raudsepp", email = "marti@juffo.org"},
+]
+classifiers = [
+    "Development Status :: 6 - Mature",
+    "Framework :: Django",
+    "Framework :: Django :: 2.2",
+    "Framework :: Django :: 3.0",
+    "Framework :: Django :: 3.2",
+    "Framework :: Django :: 4.0",
+    "Framework :: Django :: 4.1",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.0",
+    "Framework :: Django :: 5.1",
+    "Framework :: Django :: 5.2",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Debuggers",
+    "Topic :: Utilities",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "django>=2.2",
+    "sentry-sdk>=1.0",
+]
+license = {text = "GNU LGPL"}
+
+[dependency-groups]
+test = [
+    "pytest>=8.3.5",
+    "pytest-django>=4.11.1",
+    "sentry-sdk>=2.41.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/intgr/dogslow-sentry"
+"Release notes" = "https://github.com/intgr/dogslow-sentry/blob/main/README.rst#changelog"
+
+[build-system]
+requires = ["uv_build>=0.9.2,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = ["dogslow_sentry"]
+module-root = ""
