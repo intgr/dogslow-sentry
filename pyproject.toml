@@ -58,3 +58,6 @@ build-backend = "uv_build"
 [tool.uv.build-backend]
 module-name = ["dogslow_sentry"]
 module-root = ""
+
+[tool.pytest.ini_options]
+python_files = ["tests.py"]
