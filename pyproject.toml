@@ -23,7 +23,6 @@ classifiers = [
     "License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)",
     "Natural Language :: English",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -33,7 +32,7 @@ classifiers = [
     "Topic :: Software Development :: Debuggers",
     "Topic :: Utilities",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = [
     "django>=2.2",
     "sentry-sdk>=1.0",
